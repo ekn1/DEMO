@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-density="comfortable">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SCENTS · Use-Case Explorer</title>
+<style>
+  :root{
+    --navy:#002277; --blue:#0033A0; --red:#CC092F; --gold:#C99A3B;
+    --bg:#F5F6F8; --card:#FFFFFF; --text:#0F1724; --text2:#6B7280;
+    --border:#E6E8ED; --muted:#F2F4F7; --rail:#FFFFFF;
+    --ok:#15803D; --run:#0033A0; --warn:#B45309;
+    --mono:"SF Mono",ui-monospace,"Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --r:14px; --r-lg:18px; --gap:16px; --pad:18px;
+    --shadow:0 1px 3px rgba(16,23,36,.06),0 6px 18px rgba(16,23,36,.05);
+  }
+  [data-theme="dark"]{
+    --bg:#0B1220; --card:#121A2B; --text:#E6EBF2; --text2:#8C9BB4; --border:#1E2A40;
+    --muted:#0E1726; --rail:#0E1726; --ok:#34D399; --run:#60A5FA; --warn:#FBBF24;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 22px rgba(0,0,0,.35); --navy:#3B5BD9; --blue:#4C6EF5; --gold:#E8B85D;
+  }
+  [data-density="compact"]{ --gap:10px; --pad:13px; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.45;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+  .topbar{display:flex;align-items:center;gap:14px;padding:10px 18px;background:var(--card);border-bottom:1px solid var(--border);z-index:5}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.3px;font-size:16px;color:var(--navy)}
+  .brand .mark{width:34px;height:34px;border-radius:9px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:var(--shadow)}
+  .brand .mark img{width:30px;height:30px;display:block}
+  .brand small{font-weight:600;color:var(--text2);font-size:11px;letter-spacing:.4px}
+  .topbar .spacer{flex:1}
+  .kpis{display:flex;gap:10px}
+  .kpi{background:var(--muted);border:1px solid var(--border);border-radius:10px;padding:6px 11px;text-align:center;min-width:70px}
+  .kpi b{display:block;font-size:17px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+  .kpi span{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;font-weight:700}
+  .icon-btn{background:var(--muted);border:1px solid var(--border);border-radius:9px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);font-size:15px}
+  .icon-btn:hover{border-color:var(--blue)}
+  .body{flex:1;display:flex;min-height:0}
+  .rail{width:208px;flex:none;background:var(--rail);border-right:1px solid var(--border);padding:14px 10px;overflow-y:auto}
+  .rail h4{font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:var(--text2);font-weight:800;margin:6px 8px 8px}
+  .filter{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;font-weight:600;color:var(--text);border:1px solid transparent;margin-bottom:3px}
+  .filter:hover{background:var(--muted)}
+  .filter.active{background:var(--run-bg,#E7EEFB);color:var(--run);border-color:var(--run)}
+  .filter .dot{width:8px;height:8px;border-radius:50%;background:var(--text2);flex:none}
+  .filter .cnt{margin-left:auto;font-size:11px;color:var(--text2);font-weight:700;font-variant-numeric:tabular-nums}
+  .main{flex:1;overflow-y:auto;padding:var(--gap)}
+  .intro{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border-radius:var(--r-lg);padding:20px 22px;margin-bottom:var(--gap);box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .intro::after{content:'';position:absolute;right:-30px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.09)}
+  .intro h2{font-size:20px;font-weight:800;letter-spacing:-.3px}
+  .intro p{font-size:13px;opacity:.92;margin-top:6px;max-width:70ch;line-height:1.55}
+  .sect{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:var(--navy);margin:4px 4px 10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:var(--gap);align-content:start}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:var(--pad);display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:border-color .15s,transform .12s}
+  .card:hover{border-color:var(--blue)}
+  .card .head{display:flex;align-items:center;gap:10px}
+  .badge{font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:.5px;color:#fff;background:var(--navy);border-radius:6px;padding:3px 7px;flex:none}
+  .card .name{font-size:16px;font-weight:800;letter-spacing:-.2px}
+  .card .dom{font-size:11px;color:var(--text2);font-weight:700}
+  .card .desc{font-size:13px;color:var(--text2);line-height:1.5}
+  .map{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+  .chip{font-size:11px;font-weight:700;color:var(--blue);background:var(--muted);border:1px solid var(--border);border-radius:20px;padding:3px 9px}
+  .fit{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;border-top:1px solid var(--border);padding-top:9px}
+  .fit .bar{flex:1;height:6px;border-radius:6px;background:var(--muted);overflow:hidden}
+  .fit .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--navy),var(--gold))}
+  .detail{max-height:0;overflow:hidden;transition:max-height .3s ease;font-size:12px;color:var(--text2);line-height:1.55}
+  .card.open .detail{max-height:300px}
+  .detail .mod{font-family:var(--mono);font-size:11px;color:var(--text2);display:block;margin-top:6px}
+  .banner{font-size:11px;color:var(--text2);padding:7px 18px;background:var(--muted);border-bottom:1px solid var(--border)}
+  .tweaks{position:fixed;top:54px;right:14px;width:248px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;z-index:20;display:none}
+  .tweaks.open{display:block}
+  .tweaks h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:10px}
+  .tw{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:13px;font-weight:600}
+  .seg{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .seg button{background:var(--muted);border:none;padding:5px 10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--text2)}
+  .seg button.on{background:var(--blue);color:#fff}
+  .switch{width:40px;height:22px;border-radius:20px;background:var(--border);position:relative;cursor:pointer;flex:none}
+  .switch.on{background:var(--ok)}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s}
+  .switch.on::after{left:20px}
+  @media (max-width:1100px){ .rail{width:180px} }
+  @media (max-width:760px){ .rail{display:none} .kpis .kpi:nth-child(n+3){display:none} }
+  @media (prefers-reduced-motion:reduce){ *{animation:none!important} }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="mark"><img src="brand/scents-logo.svg" alt="SCENTS"></span>
+      <div>SCENTS<br><small>Use-Case Explorer</small></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="kpis">
+      <div class="kpi"><b id="kUc">0</b><span>Use cases</span></div>
+      <div class="kpi"><b id="kDom">0</b><span>Domains</span></div>
+      <div class="kpi"><b id="kMod">6</b><span>Core modules</span></div>
+    </div>
+    <div class="icon-btn" id="twBtn" title="Tweaks">⚙</div>
+  </div>
+
+  <div class="banner">Each use case maps to real SCENTS modules: Ingestion (Kafka+batch), Transform (features/sentiment/Spark), ML, JanusGraph (:8182), SAIM agent loop, SERL entity resolution. Fit scores are illustrative (no live deployment data).</div>
+
+  <div class="body">
+    <nav class="rail" id="rail"><h4>Domains</h4></nav>
+    <main class="main">
+      <div class="intro">
+        <h2>Where else can SCENTS go?</h2>
+        <p>The same spatial-cognitive stack that powers logistics tracking — ingest anything, transform signals, reason with an autonomous loop, resolve entities, and query the graph — applies wherever movement, relationships, and decisions meet messy real-world data. Browse by domain; open a card to see the module mapping.</p>
+      </div>
+      <div class="sect">Candidate applications</div>
+      <div class="grid" id="grid"></div>
+    </main>
+  </div>
+
+  <div class="tweaks" id="tweaks">
+    <h3>Display</h3>
+    <div class="tw">Theme <div class="seg" id="segTheme"><button data-v="light" class="on">Light</button><button data-v="dark">Dark</button></div></div>
+    <div class="tw">Density <div class="seg" id="segDens"><button data-v="comfortable" class="on">Comfort</button><button data-v="compact">Compact</button></div></div>
+    <div class="tw">Reduced motion <div class="switch" id="swMotion"></div></div>
+  </div>
+
+<script>
+// ---- Use cases: each grounded in real SCENTS modules ----
+const USES = [
+  { id:'supply', dom:'Logistics', name:'Supply-chain control tower', code:'SUP', fit:94,
+    desc:'Extend the WISMO backbone into multi-tier supplier visibility across ports, warehouses, and last-mile.',
+    chips:['Ingestion','Transform','SAIM','Graph'], mod:'Kafka + feature_engineering + saim/* + janusgraph_client' },
+  { id:'retail', dom:'Retail', name:'Retail footfall & shelf intelligence', code:'RTL', fit:81,
+    desc:'Fuse POS, sensor, and geo streams to reason about store-level demand and stock-outs in real time.',
+    chips:['Ingestion','Transform','ML','SAIM'], mod:'batch_loader + sentiment_classifier + predict + decide' },
+  { id:'fintech', dom:'Finance', name:'Transaction fraud & AML graph', code:'FN', fit:88,
+    desc:'Resolve parties across noisy ledgers (SERL) and traverse relationship graphs to surface rings and layering.',
+    chips:['SERL','Graph','SAIM'], mod:'ditto_engine + splink_engine + traversals + decide' },
+  { id:'health', dom:'Health', name:'Patient journey & outbreak tracking', code:'HLTH', fit:79,
+    desc:'Track movement of people, samples, and supplies across facilities; reason over contact and supply graphs.',
+    chips:['Ingestion','Graph','SAIM','SERL'], mod:'kafka_producer + janusgraph + orient + lsh_index' },
+  { id:'agri', dom:'Agriculture', name:'Crop & climate signal fusion', code:'AG', fit:76,
+    desc:'Merge satellite, weather, and field sensor feeds to advise planting, irrigation, and yield risk.',
+    chips:['Ingestion','Transform','ML'], mod:'batch_loader + stress_composer + train/predict' },
+  { id:'energy', dom:'Energy', name:'Grid asset & outage cognition', code:'EN', fit:72,
+    desc:'Ingest telemetry from substations and meters, then reason over the network graph to localize faults.',
+    chips:['Ingestion','Graph','SAIM','ML'], mod:'kafka_producer + traversals + decide + predict' },
+  { id:'smartcity', dom:'Civic', name:'Smart-city mobility twin', code:'CTY', fit:84,
+    desc:'A live digital twin of corridors — vehicles, transit, and incidents — reasoned over a spatial graph.',
+    chips:['Ingestion','Transform','Graph','SAIM'], mod:'geo + redis-client + janusgraph + saim loop' },
+  { id:'defense', dom:'Security', name:'Situational-awareness fusion', code:'SEC', fit:69,
+    desc:'Correlate heterogeneous intel feeds, resolve entities, and maintain a queryable common operating picture.',
+    chips:['SERL','Graph','Transform','SAIM'], mod:'lsh_index + schema + stress_composer + nlq' },
+  { id:'telco', dom:'Telecom', name:'Network experience & churn', code:'TC', fit:77,
+    desc:'Track subscriber movement and service signals; reason over relationship graphs to predict churn and outages.',
+    chips:['Ingestion','Graph','ML','SERL'], mod:'kafka_producer + traversals + predict + splink' },
+  { id:'insurance', dom:'Insurance', name:'Claims triage & fraud', code:'INS', fit:83,
+    desc:'Resolve claimants and entities across sources, traverse linkage graphs, and auto-triage high-stress claims.',
+    chips:['SERL','Graph','SAIM','ML'], mod:'ditto + splink + decide + model_registry' },
+  { id:'disaster', dom:'Humanitarian', name:'Disaster response coordination', code:'DR', fit:80,
+    desc:'Fuse field reports, imagery, and supply movements into a single reasoned picture for responders.',
+    chips:['Ingestion','Transform','SAIM','Graph'], mod:'batch_loader + sentiment + saim loop + janusgraph' },
+  { id:'manufacturing', dom:'Industry', name:'Factory digital twin', code:'MFG', fit:74,
+    desc:'Ingest line telemetry and maintenance logs; reason over asset graphs to predict failures before they hit.',
+    chips:['Ingestion','ML','Graph','SAIM'], mod:'kafka_producer + train/predict + traversals + decide' }
+];
+
+const domains = ['All', ...Array.from(new Set(USES.map(u=>u.dom)))];
+const rail = document.getElementById('rail');
+domains.forEach((d,i)=>{
+  const el=document.createElement('div');
+  el.className='filter'+(i===0?' active':'');
+  el.dataset.d=d;
+  const cnt=d==='All'?USES.length:USES.filter(u=>u.dom===d).length;
+  el.innerHTML=`<span class="dot"></span>${d}<span class="cnt">${cnt}</span>`;
+  el.onclick=()=>{document.querySelectorAll('.filter').forEach(f=>f.classList.remove('active'));el.classList.add('active');render(d);};
+  rail.appendChild(el);
+});
+
+const grid=document.getElementById('grid');
+function render(domain='All'){
+  grid.innerHTML='';
+  const list=domain==='All'?USES:USES.filter(u=>u.dom===domain);
+  list.forEach(u=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.onclick=()=>card.classList.toggle('open');
+    card.innerHTML=`
+      <div class="head"><span class="badge">${u.code}</span>
+        <div><div class="name">${u.name}</div><div class="dom">${u.dom}</div></div></div>
+      <div class="desc">${u.desc}</div>
+      <div class="map">${u.chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
+      <div class="fit">Fit<span class="bar"><i style="width:${u.fit}%"></i></span><b>${u.fit}%</b></div>
+      <div class="detail">Module mapping:<span class="mod">${u.mod}</span></div>`;
+    grid.appendChild(card);
+  });
+  document.getElementById('kUc').textContent=list.length;
+  document.getElementById('kDom').textContent=new Set(list.map(u=>u.dom)).size;
+}
+
+const tweaks=document.getElementById('tweaks');
+document.getElementById('twBtn').onclick=()=>tweaks.classList.toggle('open');
+function seg(id,fn){document.querySelectorAll(`#${id} button`).forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(`#${id} button`).forEach(x=>x.classList.remove('on'));b.classList.add('on');fn(b.dataset.v);});}
+seg('segTheme',v=>{document.documentElement.dataset.theme=v;ls('theme',v);});
+seg('segDens',v=>{document.documentElement.dataset.density=v;ls('density',v);});
+const swm=document.getElementById('swMotion');swm.onclick=()=>{swm.classList.toggle('on');document.documentElement.classList.toggle('rm',swm.classList.contains('on'));};
+function ls(k,v){try{localStorage.setItem('uc_'+k,v)}catch(e){}}
+try{
+  const t=localStorage.getItem('uc_theme');if(t){document.documentElement.dataset.theme=t;
+    document.querySelectorAll('#segTheme button').forEach(b=>b.classList.toggle('on',b.dataset.v===t));}
+  const d=localStorage.getItem('uc_density');if(d){document.documentElement.dataset.density=d;
+    document.querySelectorAll('#segDens button').forEach(b=>b.classList.toggle('on',b.dataset.v===d));}
+}catch(e){}
+
+render('All');
+</script>
+</body>
+</html>

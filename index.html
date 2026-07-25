@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-density="comfortable">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SCENTS × WISMO — Investor Showcase</title>
+<style>
+  :root{
+    --ink:#0A1A2F; --navy:#0B2E4F; --blue:#0E5A8A; --teal:#0E7490; --gold:#C99A3B;
+    --bg:#F6F4EF; --card:#FFFFFF; --text:#13202E; --text2:#5C6B7A;
+    --border:#E4DECF; --muted:#EFEBE2; --rail:#FBF9F4;
+    --ok:#15803D; --run:#0E7490; --warn:#B45309; --err:#CC092F;
+    --mono:"SF Mono",ui-monospace,"Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Times New Roman",ui-serif,serif;
+    --r:14px; --r-lg:20px; --gap:18px; --pad:20px;
+    --shadow:0 1px 3px rgba(16,30,46,.07),0 10px 28px rgba(16,30,46,.06);
+  }
+  [data-theme="dark"]{
+    --ink:#0C1622; --navy:#16344F; --blue:#2E7FB0; --teal:#5EC6DA; --gold:#D9B25A;
+    --bg:#0B121B; --card:#111D2A; --text:#E8EEF4; --text2:#8FA0B2; --border:#1E2C3C;
+    --muted:#0E1825; --rail:#0E1825; --shadow:0 1px 3px rgba(0,0,0,.5),0 12px 30px rgba(0,0,0,.4);
+  }
+  [data-density="compact"]{ --gap:11px; --pad:14px; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.55}
+  /* nav */
+  nav{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--rail) 88%,transparent);
+    backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:11px 22px;display:flex;align-items:center;gap:18px}
+  nav .brand{font-weight:900;letter-spacing:-.4px;font-size:16px;color:var(--ink);display:flex;align-items:center;gap:9px}
+  nav .brand .x{color:var(--gold);font-weight:900}
+  nav .links{display:flex;gap:4px;margin-left:auto}
+  nav .links a{color:var(--text2);text-decoration:none;font-weight:700;font-size:13px;padding:7px 12px;border-radius:9px}
+  nav .links a:hover{background:var(--muted);color:var(--ink)}
+  .icon-btn{background:var(--muted);border:1px solid var(--border);border-radius:9px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);font-size:15px}
+  .icon-btn:hover{border-color:var(--teal)}
+  /* hero */
+  header.hero{position:relative;padding:78px 24px 64px;background:var(--ink);color:#F3EFE6;overflow:hidden}
+  header.hero::before{content:'';position:absolute;inset:0;
+    background:
+      radial-gradient(680px 360px at 84% -12%, color-mix(in srgb,var(--teal) 32%,transparent), transparent 70%),
+      radial-gradient(560px 320px at 6% 116%, color-mix(in srgb,var(--gold) 20%,transparent), transparent 70%),
+      conic-gradient(from 200deg at 70% 30%, color-mix(in srgb,var(--teal) 10%,transparent), transparent 40%);
+    pointer-events:none}
+  header.hero::after{content:'';position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:46px 46px;mask:radial-gradient(circle at 50% 35%,#000 30%,transparent 85%);opacity:.6;pointer-events:none}
+  .hero-inner{max-width:1080px;margin:0 auto;position:relative}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);
+    display:flex;align-items:center;gap:9px;margin-bottom:18px}
+  .eyebrow::before{content:'';width:26px;height:1px;background:var(--teal)}
+  .chip{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.4px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#E9E3D4;border-radius:30px;padding:6px 14px}
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--gold)}
+  header.hero h1{font-family:var(--serif);font-weight:700;font-size:clamp(34px,5.4vw,60px);line-height:1.04;letter-spacing:-.5px;margin:20px 0 16px;max-width:14ch}
+  header.hero h1 em{font-style:italic;color:var(--gold)}
+  header.hero p.lead{font-size:clamp(16px,2vw,19px);color:#CFC8B8;max-width:60ch;line-height:1.6}
+  .hero-cta{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+  .btn{border:none;border-radius:12px;padding:13px 20px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;transition:transform .12s,opacity .12s}
+  .btn:active{transform:scale(.97)}
+  .btn.gold{background:var(--gold);color:#1B1404}
+  .btn.ghost{background:rgba(255,255,255,.06);color:#F3EFE6;border:1px solid rgba(255,255,255,.2)}
+  /* sections */
+  section{max-width:1080px;margin:0 auto;padding:54px 24px}
+  .sect-head{margin-bottom:24px}
+  .sect-head .k{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);
+    border:1px solid color-mix(in srgb,var(--teal) 35%,transparent);border-radius:20px;padding:4px 11px;background:color-mix(in srgb,var(--teal) 8%,transparent)}
+  .sect-head h2{font-family:var(--serif);font-size:clamp(26px,3.4vw,38px);font-weight:700;letter-spacing:-.4px;margin-top:6px;color:var(--ink)}
+  .sect-head p{color:var(--text2);margin-top:8px;max-width:64ch;font-size:15px}
+  /* tabs */
+  .tabs{display:inline-flex;gap:4px;background:var(--muted);padding:4px;border-radius:13px;margin-bottom:22px}
+  .tabs button{border:none;background:transparent;color:var(--text2);font:inherit;font-weight:800;font-size:14px;padding:9px 18px;border-radius:10px;cursor:pointer}
+  .tabs button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+  /* capability cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:var(--gap)}
+  .cap{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--pad);box-shadow:var(--shadow);cursor:pointer;transition:border-color .15s,transform .12s;display:flex;flex-direction:column;gap:10px}
+  .cap:hover{border-color:var(--teal)}
+  .cap .tag{font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--teal)}
+  .cap h3{font-size:17px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:9px}
+  .cap h3 .ic{width:30px;height:30px;border-radius:8px;background:var(--muted);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+  .cap .val{font-size:13px;color:var(--text2);line-height:1.5}
+  .cap .more{font-size:12px;font-weight:800;color:var(--blue);margin-top:2px}
+  .cap .detail{max-height:0;overflow:hidden;transition:max-height .3s ease;font-size:13px;color:var(--text2);line-height:1.55}
+  .cap.open .detail{max-height:240px}
+  .cap .detail ul{margin:8px 0 0 16px}
+  .cap .detail li{margin:3px 0}
+  .cap .mod{font-family:var(--mono);font-size:11px;color:var(--text2);margin-top:6px;display:block}
+  /* flow diagram */
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin-top:8px}
+  .node{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;flex:1;min-width:150px;box-shadow:var(--shadow)}
+  .node .t{font-weight:800;font-size:14px;color:var(--ink)}
+  .node .d{font-size:12px;color:var(--text2);margin-top:4px}
+  .arrow{display:flex;align-items:center;color:var(--gold);font-size:22px;font-weight:900}
+  @media(max-width:680px){.arrow{transform:rotate(90deg)}}
+  /* live demo panel */
+  .demo{background:var(--ink);color:#EDE7D9;border-radius:var(--r-lg);padding:24px;box-shadow:var(--shadow)}
+  .demo .dh{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .demo .dh h3{font-size:17px;font-weight:800;color:#fff}
+  .demo .live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:var(--gold);border:1px solid var(--gold);border-radius:20px;padding:3px 10px}
+  .demo .live .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:blink 1.2s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .demo .play{margin-left:auto;background:var(--gold);color:#1B1404;border:none;border-radius:9px;padding:8px 14px;font-weight:800;font-size:12px;cursor:pointer}
+  .bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:6px}
+  .bar{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:12px}
+  .bar .l{font-size:11px;color:#B9B2A1;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+  .bar .v{font-size:22px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;margin-top:4px}
+  .bar .u{font-size:11px;color:var(--teal);font-weight:700}
+  .simnote{font-size:11px;color:#9C9584;margin-top:14px;font-style:italic}
+  /* why africa */
+  .why{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--gap)}
+  .why .c{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--pad);box-shadow:var(--shadow)}
+  .why .c h4{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:6px}
+  .why .c p{font-size:13px;color:var(--text2);line-height:1.55}
+  /* interactive africa */
+  .africa-wrap{display:grid;grid-template-columns:minmax(280px,1fr) 1.1fr;gap:var(--gap);align-items:stretch;margin-top:6px}
+  @media(max-width:840px){.africa-wrap{grid-template-columns:1fr}}
+  .mapcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .mapcard h4{font-size:13px;font-weight:800;color:var(--ink);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+  .mapbox{position:relative;width:100%;aspect-ratio:1/1.05;border-radius:14px;border:1px solid var(--border);overflow:hidden;
+    background:
+      radial-gradient(circle at 30% 18%, color-mix(in srgb,var(--teal) 14%,transparent), transparent 55%),
+      radial-gradient(circle at 78% 82%, color-mix(in srgb,var(--gold) 12%,transparent), transparent 55%),
+      linear-gradient(180deg,#0E2A33,#0B2230);
+    background-size:auto,auto,auto;
+  }
+  .mapbox::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:
+      linear-gradient(color-mix(in srgb,var(--teal) 16%,transparent) 1px,transparent 1px),
+      linear-gradient(90deg,color-mix(in srgb,var(--teal) 16%,transparent) 1px,transparent 1px);
+    background-size:14px 14px;opacity:.16;mask:radial-gradient(circle at 50% 50%,#000 55%,transparent 100%)}
+  .mapbox::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 40%,color-mix(in srgb,var(--teal) 22%,transparent) 50%,transparent 60%);
+    transform:translateX(-30%);animation:scan 6s linear infinite;opacity:.5}
+  @keyframes scan{0%{transform:translateX(-60%)}100%{transform:translateX(60%)}}
+  .mapbox svg{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+  .hot{position:absolute;width:30px;height:30px;transform:translate(-50%,-50%);border-radius:9px;z-index:3;
+    background:linear-gradient(150deg,#0F3550,#0C2230);border:1px solid color-mix(in srgb,var(--teal) 55%,transparent);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--teal);
+    box-shadow:0 4px 12px rgba(0,0,0,.35);transition:transform .15s,border-color .15s,color .15s,box-shadow .15s}
+  .hot svg{width:17px;height:17px;display:block;position:relative;z-index:1}
+  .hot:hover{transform:translate(-50%,-50%) translateY(-2px);color:var(--gold);border-color:var(--gold)}
+  .hot .ring{position:absolute;left:50%;top:50%;width:100%;height:100%;border-radius:9px;border:1.5px solid var(--teal);opacity:.5;pointer-events:none;
+    transform:translate(-50%,-50%);animation:ping 2.4s infinite;z-index:0}
+  .hot.sel{color:var(--gold);border-color:var(--gold);background:linear-gradient(150deg,#15405c,#0E2A3C);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 28%,transparent),0 6px 16px rgba(0,0,0,.4)}
+  .hot.sel .ring{border-color:var(--gold)}
+  @keyframes ping{0%{transform:translate(-50%,-50%) scale(1);opacity:.5}100%{transform:translate(-50%,-50%) scale(2.6);opacity:0}}
+  .hotlabel{position:absolute;transform:translate(-50%,-150%);font-size:10px;font-weight:800;color:#EAF6FA;white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.7);z-index:4}
+  .insight{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--pad);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+  .insight .ttl{font-size:17px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:9px}
+  .insight .ttl .pin{width:18px;height:18px;color:var(--gold);display:inline-flex}
+  .insight .ttl .pin svg{width:18px;height:18px}
+  .insight .body{font-size:13px;color:var(--text2);line-height:1.6}
+  .insight .mod{font-family:var(--mono);font-size:11px;color:var(--text2);border-top:1px solid var(--border);padding-top:9px}
+  .fitwrap{margin-top:2px}
+  .fitwrap .lab{display:flex;justify-content:space-between;font-size:11px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.6px}
+  .fitbar{height:8px;border-radius:8px;background:var(--muted);overflow:hidden;margin-top:5px}
+  .fitbar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:8px;transition:width .4s ease}
+  .why .c{cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .12s}
+  .why .c:hover{border-color:var(--teal)}
+  .why .c.sel{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 40%,transparent)}
+  .why .c .proof{font-size:12px;color:var(--teal);font-weight:700;margin-top:8px;display:none}
+  .why .c.sel .proof{display:block}
+  .investors{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .inv{font-size:12px;font-weight:800;color:var(--text2);background:var(--muted);border:1px solid var(--border);border-radius:20px;padding:6px 12px;cursor:pointer;transition:.15s}
+  .inv:hover{color:var(--ink)}
+  .inv.on{background:var(--ink);color:#F3EFE6;border-color:var(--ink)}
+  .invhint{font-size:11px;color:var(--text2);margin-top:8px;font-style:italic}
+  /* ask */
+  .ask{background:linear-gradient(135deg,var(--navy),var(--ink));color:#F3EFE6;border-radius:var(--r-lg);padding:34px;box-shadow:var(--shadow)}
+  .ask h2{font-family:var(--serif);font-size:clamp(24px,3vw,34px);font-weight:700;margin-bottom:12px}
+  .ask p{color:#CFC8B8;max-width:62ch;line-height:1.6}
+  .ask .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:20px}
+  .ask .item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:16px}
+  .ask .item .t{font-weight:800;color:#fff;font-size:14px}
+  .ask .item .d{font-size:12px;color:#C3BCAB;margin-top:5px}
+  .draft{font-size:11px;color:var(--gold);font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-top:18px}
+  footer{border-top:1px solid var(--border);padding:26px 24px;color:var(--text2);font-size:12px;text-align:center}
+  .banner{font-size:12px;color:var(--text2);background:var(--muted);border-bottom:1px solid var(--border);padding:9px 24px;text-align:center}
+  /* tweaks */
+  .tweaks{position:fixed;top:60px;right:16px;width:250px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:14px;z-index:40;display:none}
+  .tweaks.open{display:block}
+  .tweaks h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin-bottom:10px}
+  .tw{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:13px;font-weight:600}
+  .seg{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .seg button{background:var(--muted);border:none;padding:5px 10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--text2)}
+  .seg button.on{background:var(--teal);color:#fff}
+  .switch{width:40px;height:22px;border-radius:20px;background:var(--border);position:relative;cursor:pointer;flex:none}
+  .switch.on{background:var(--ok)}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s}
+  .switch.on::after{left:20px}
+  body.present nav,body.present .banner{display:none}
+  @media (max-width:760px){ nav .links{display:none} }
+  @media (prefers-reduced-motion:reduce){ *{animation:none!important} }
+</style>
+</head>
+<body>
+  <div class="banner">Illustrative investor showcase. Capability claims map to real SCENTS / WISMO modules; all throughput figures are simulated locally (SIM) — no live financials are asserted.</div>
+
+  <nav id="nav">
+    <div class="brand"><img src="brand/scents-wismo-lockup.svg" alt="SCENTS × WISMO" style="height:30px;width:auto"></div>
+    <div class="links">
+      <a href="#overview">Overview</a><a href="#scents">SCENTS</a><a href="#wismo">WISMO</a>
+      <a href="#stack">Stack</a><a href="#africa">Why Africa</a><a href="#ask">The Ask</a>
+    </div>
+    <div class="icon-btn" id="twBtn" title="Display">⚙</div>
+  </nav>
+
+  <header class="hero" id="overview">
+    <div class="hero-inner">
+      <div class="eyebrow">Spatial-Cognitive Intelligence · EKN Consulting International</div>
+      <span class="chip"><span class="dot"></span> Showcasing at Africa Startup Festival · Nairobi · Oct 29–30 2026</span>
+      <h1>The cognitive <em>logistics intelligence</em> layer for emerging markets</h1>
+      <p class="lead">SCENTS turns raw movement, signals, and relationships into spatial-cognitive decisions. WISMO turns those decisions into a transparent, real-time experience for every merchant, rider, and customer. One stack — from ingest to insight to doorstep.</p>
+      <div class="hero-cta">
+        <button class="btn gold" onclick="document.getElementById('scents').scrollIntoView()">Explore the technology</button>
+        <button class="btn ghost" onclick="document.getElementById('ask').scrollIntoView()">Investor summary</button>
+      </div>
+    </div>
+  </header>
+
+  <section id="scents">
+    <div class="sect-head">
+      <div class="k">Module 01</div>
+      <h2>SCENTS — Spatial-Cognitive Enterprise Tracking</h2>
+      <p>An end-to-end intelligence engine: ingest anything, transform it, reason over it with an autonomous agent loop, and resolve entities with record-linkage. Built for the messiness of real-world, multi-source data.</p>
+    </div>
+    <div class="tabs" id="scentsTabs">
+      <button class="on" data-g="all">All</button>
+      <button data-g="ingest">Ingest</button><button data-g="reason">Reason</button><button data-g="resolve">Resolve</button>
+    </div>
+    <div class="grid" id="scentsGrid"></div>
+  </section>
+
+  <section id="wismo">
+    <div class="sect-head">
+      <div class="k">Module 02</div>
+      <h2>WISMO — Where Is My Order, end to end</h2>
+      <p>A complete order-to-delivery operating system: a gateway, core services for orders/geo/route, branded experiences, WhatsApp-first notifications, and a privacy-safe tracking pixel — with a customer portal for merchants, riders, and clients.</p>
+    </div>
+    <div class="tabs" id="wismoTabs">
+      <button class="on" data-g="all">All</button>
+      <button data-g="core">Core</button><button data-g="experience">Experience</button><button data-g="portal">Portal</button>
+    </div>
+    <div class="grid" id="wismoGrid"></div>
+  </section>
+
+  <section id="stack">
+    <div class="sect-head">
+      <div class="k">How it fits together</div>
+      <h2>One pipeline, two outcomes</h2>
+      <p>SCENTS produces the intelligence; WISMO delivers and proves it. The same event stream powers back-office cognition and front-office transparency.</p>
+    </div>
+    <div class="flow">
+      <div class="node"><div class="t">Ingest</div><div class="d">Kafka + batch · SCENTS</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="t">Transform</div><div class="d">Features · sentiment · Spark</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="t">Reason</div><div class="d">SAIM agent loop · ML · Graph</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="t">Act &amp; Prove</div><div class="d">WISMO orders · route · pixel</div></div>
+    </div>
+    <div style="height:14px"></div>
+    <div class="flow">
+      <div class="node"><div class="t">Merchant</div><div class="d">WISMO portal · ARE</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="t">Rider</div><div class="d">Live route · proof</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="t">Customer</div><div class="d">WISMO · WhatsApp</div></div>
+      <div class="arrow">→</div>
+      <div class="node"><div class="t">Signal back</div><div class="d">Pixel :3007 → SCENTS</div></div>
+    </div>
+  </section>
+
+  <section id="africa">
+    <div class="sect-head">
+      <div class="k">Why now, why here</div>
+      <h2>Built for the African logistics reality</h2>
+      <p>The festival's own stage — TLcom, Flourish, Acumen, Antler, Capria, Safaricom, MTN — is betting on exactly this: infrastructure for commerce that works where addresses are fuzzy, corridors are dynamic, and the phone is the bank and the map.</p>
+    </div>
+    <div class="africa-wrap">
+      <div class="mapcard">
+        <h4>Opportunity map · tap a node</h4>
+        <div class="mapbox" id="mapbox">
+          <svg viewBox="0 0 100 105" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M14 30 C26 16 46 14 52 22 C66 18 78 26 74 40 C86 46 84 64 70 66 C72 80 60 92 48 86 C34 92 22 80 26 66 C12 60 10 42 14 30 Z" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-opacity="0.55" stroke-dasharray="2 3"/>
+          </svg>
+          <!-- hotspots injected by JS -->
+        </div>
+        <div class="invhint" id="maphint">Showing: all nodes</div>
+      </div>
+      <div class="insight" id="insight">
+        <div class="ttl"><span class="pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3"/></svg></span><span id="insTitle">Pick a market node</span></div>
+        <div class="body" id="insBody">Tap any hotspot on the map to see why SCENTS × WISMO fits that corridor — grounded in the real module stack.</div>
+        <div class="fitwrap">
+          <div class="lab"><span>Strategic fit</span><span id="fitPct">—</span></div>
+          <div class="fitbar"><i id="fitBar" style="width:0%"></i></div>
+        </div>
+        <div class="mod" id="insMod">scents/ · wismo/</div>
+      </div>
+    </div>
+
+    <div class="sect" style="margin-top:var(--gap)">Why it fits — select to focus</div>
+    <div class="why">
+      <div class="c sel" data-k="spatial"><h4>Spatial by default</h4><p>SCENTS reasons over geography and relationships, not just tables — suited to informal corridors and incomplete records.</p><div class="proof">→ JanusGraph :8182 + Geo/Route :3002</div></div>
+      <div class="c" data-k="lastmile"><h4>Last-mile transparency</h4><p>WISMO gives merchants, riders, and customers one live truth via the channel they already use: WhatsApp.</p><div class="proof">→ Notification :3003 + Pixel :3007</div></div>
+      <div class="c" data-k="entity"><h4>Entity resolution at scale</h4><p>SERL deduplicates across noisy sources (Ditto + Splink + LSH) — critical when identity data is fragmented.</p><div class="proof">→ SERL: ditto + splink + lsh_index</div></div>
+      <div class="c" data-k="privacy"><h4>Privacy-safe signals</h4><p>The pixel and audit log prove delivery without over-collecting — a fit for emerging-market trust norms.</p><div class="proof">→ pixel-processor + audit_log</div></div>
+    </div>
+
+    <div class="investors" id="investors">
+      <span class="invhint" style="align-self:center;margin:0 6px 0 0">ASF-stage capital &amp; partners:</span>
+      <span class="inv" data-i="tlcom">TLcom</span>
+      <span class="inv" data-i="flourish">Flourish</span>
+      <span class="inv" data-i="acumen">Acumen</span>
+      <span class="inv" data-i="antler">Antler</span>
+      <span class="inv" data-i="capria">Capria</span>
+      <span class="inv" data-i="safaricom">Safaricom</span>
+      <span class="inv" data-i="mtn">MTN</span>
+    </div>
+    <div class="invhint" id="invhint">Select an investor/partner to emphasize the relevant capability. (Illustrative alignment — verify each thesis independently.)</div>
+  </section>
+
+  <section id="live">
+    <div class="sect-head">
+      <div class="k">Live demonstration</div>
+      <h2>The engine, in motion</h2>
+      <p>A real-time view of the subsystems processing events. Figures are simulated for this showcase (SIM) — the architecture and module names are the production system.</p>
+    </div>
+    <div class="demo">
+      <div class="dh">
+        <h3>Throughput by subsystem</h3>
+        <span class="live"><span class="dot"></span> SIM · LIVE</span>
+        <button class="play" id="playBtn">Pause</button>
+      </div>
+      <div class="bars" id="bars"></div>
+      <div class="simnote">Simulated locally for demonstration. No live backend or financial data is connected.</div>
+    </div>
+  </section>
+
+  <section id="ask">
+    <div class="sect-head">
+      <div class="k">Investor summary</div>
+      <h2>What we're building toward</h2>
+    </div>
+    <div class="ask">
+      <h2>Two engines, one defensible stack</h2>
+      <p>SCENTS is the intelligence moat; WISMO is the commercial surface. Together they span from raw signal to customer-visible truth — a position hard to replicate piecemeal. We're opening conversations with funds and operators building commerce infrastructure across the continent.</p>
+      <div class="grid2">
+        <div class="item"><div class="t">Thesis</div><div class="d">Vertical intelligence for logistics in fragmented, mobile-first markets.</div></div>
+        <div class="item"><div class="t">Moat</div><div class="d">Autonomous reasoning + entity resolution on real-world, noisy data.</div></div>
+        <div class="item"><div class="t">Surface</div><div class="d">WISMO: merchant / rider / client portal, WhatsApp-native.</div></div>
+        <div class="item"><div class="t">Fit</div><div class="d">Aligned with ASF-stage investors and telco/commerce partners.</div></div>
+      </div>
+      <div class="draft">Draft — placeholders for the team to fill: traction, revenue model, round size, use of funds.</div>
+    </div>
+  </section>
+
+  <footer>SCENTS × WISMO investor showcase · capability claims map to production modules · metrics are illustrative (SIM) · no financials asserted.</footer>
+
+  <div class="tweaks" id="tweaks">
+    <h3>Display</h3>
+    <div class="tw">Theme <div class="seg" id="segTheme"><button data-v="light" class="on">Light</button><button data-v="dark">Dark</button></div></div>
+    <div class="tw">Density <div class="seg" id="segDens"><button data-v="comfortable" class="on">Comfort</button><button data-v="compact">Compact</button></div></div>
+    <div class="tw">Presenter mode <div class="switch" id="swPresent"></div></div>
+    <div class="tw">Reduced motion <div class="switch" id="swMotion"></div></div>
+  </div>
+
+<script>
+// ---- Real modules → investor-facing capability cards ----
+const SCENTS=[
+  {g:'ingest',tag:'INGEST',ic:'⚡',t:'Streaming + batch ingest',v:'Kafka producer and batch loader absorb events and bulk loads from any source, structured or not.',
+    mod:'kafka_producer.py · batch_loader.py',d:['Exactly-once-lean ingestion','Backpressure-aware batch path','Feeds Transform + Graph']},
+  {g:'ingest',tag:'INGEST',ic:'🧬',t:'Feature & signal transform',v:'Feature engineering, a sentiment classifier, and a stress composer fuse heterogeneous signals into model-ready features.',
+    mod:'feature_engineering.py · sentiment_classifier.py · stress_composer.py',d:['NLP sentiment labeling','Multi-signal stress scoring','Spark-distributed processing']},
+  {g:'reason',tag:'REASON',ic:'🧠',t:'SAIM autonomous agent loop',v:'Observer → Orient → Decide → Act → NLQ: a closed-loop cognitive agent that senses, frames, chooses, and executes.',
+    mod:'observer.py · orient.py · decide.py · act.py · nlq.py',d:['Self-correcting decision loop','Natural-language querying','Human-in-the-loop hooks']},
+  {g:'reason',tag:'REASON',ic:'📈',t:'ML train / predict / registry',v:'Model training, inference, and a registry keep predictions versioned and reproducible.',
+    mod:'train.py · predict.py · model_registry.py',d:['Versioned model registry','Online + batch inference','Reproducible training']},
+  {g:'reason',tag:'REASON',ic:'🕸️',t:'JanusGraph knowledge store',v:'A graph (port 8182) holds entities and relationships, enabling traversals no flat table can.',
+    mod:'janusgraph_client.py · schema.py · traversals.py',d:['Relationship-native queries','Bulk graph load','Schema-governed']},
+  {g:'resolve',tag:'RESOLVE',ic:'🔗',t:'SERL entity resolution',v:'Ditto (deep) + Splink (probabilistic) + LSH index deduplicate across fragmented, noisy sources — with a full audit log.',
+    mod:'ditto_engine.py · splink_engine.py · lsh_index.py · audit_log.py',d:['Deep + probabilistic matching','Near-duplicate detection','Auditable decisions']}
+];
+const WISMO=[
+  {g:'core',tag:'CORE',ic:'🚪',t:'API Gateway',v:'Single HTTP entrypoint (:3000) with dispatch and auto-heal recovery for the whole platform.',
+    mod:'server.js',d:['Self-healing recovery','Central dispatch','Auth boundary']},
+  {g:'core',tag:'CORE',ic:'📦',t:'Order Service',v:'The system of record for orders (:3001) — persistence, create/lookup, validation.',
+    mod:'src/db.js · src/index.js',d:['Order lifecycle','Strong consistency','Gaurded writes']},
+  {g:'core',tag:'CORE',ic:'🗺️',t:'Geo + Route',v:'Geocoding, Redis-cached lookups, and route optimization (:3002) power live tracking.',
+    mod:'geo.js · redis-client.js · route-service',d:['Cached geocoding','Dynamic routing','Low-latency lookup']},
+  {g:'experience',tag:'EXP',ic:'✨',t:'ARE branded experiences',v:'The ARE service (:3004) publishes branded delivery experiences merchants control.',
+    mod:'are-service',d:['Templated experiences','Merchant-authored','Published to clients']},
+  {g:'experience',tag:'EXP',ic:'💬',t:'WhatsApp-first notifications',v:'Notification service (:3003) delivers status via the channel customers actually use.',
+    mod:'whatsapp.js · templates.js',d:['Template rendering','Opt-in aware','Multi-channel ready']},
+  {g:'experience',tag:'EXP',ic:'📍',t:'Privacy-safe tracking pixel',v:'Pixel service (:3007) proves delivery events without over-collecting — feeding signal back to SCENTS.',
+    mod:'validator.js · pixel-processor.js',d:['Schema-guarded events','Trust-preserving','Closes the loop']},
+  {g:'portal',tag:'PORTAL',ic:'🏬',t:'Merchant console',v:'Merchants manage orders and publish experiences from one place.',
+    mod:'dashboard/merchant',d:['Order management','Experience publishing','Bulk notify']},
+  {g:'portal',tag:'PORTAL',ic:'🛵',t:'Rider app',v:'Riders get assigned deliveries, live routes, and proof-of-delivery.',
+    mod:'dashboard/rider-app',d:['Route optimization','Proof of delivery','Earnings view']},
+  {g:'portal',tag:'PORTAL',ic:'📱',t:'Client / WISMO view',v:'Customers track any order in real time and set how they want to be told.',
+    mod:'dashboard/index.html',d:['Live map','ETA alerts','Channel preferences']}
+];
+
+function cardHTML(c){
+  const det=`<ul>${c.d.map(x=>`<li>${x}</li>`).join('')}</ul><span class="mod">${c.mod}</span>`;
+  return `<div class="cap" onclick="this.classList.toggle('open')">
+    <span class="tag">${c.tag}</span>
+    <h3><span class="ic">${c.ic}</span>${c.t}</h3>
+    <div class="val">${c.v}</div>
+    <div class="more">What's inside ▾</div>
+    <div class="detail">${det}</div></div>`;
+}
+function fill(gridId,tabsId,data){
+  const grid=document.getElementById(gridId);
+  const tabs=document.getElementById(tabsId);
+  function show(g){ grid.innerHTML=data.filter(c=>g==='all'||c.g===g).map(cardHTML).join(''); }
+  tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    tabs.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');show(b.dataset.g);});
+  show('all');
+}
+fill('scentsGrid','scentsTabs',SCENTS);
+fill('wismoGrid','wismoTabs',WISMO);
+
+// ---- Live SIM demo ----
+const SUBS=[{n:'Ingest',v:1200},{n:'Transform',v:850},{n:'SAIM',v:95},{n:'SERL',v:160},
+  {n:'Orders',v:980},{n:'Geo/Route',v:760},{n:'Notify',v:880},{n:'Pixel',v:1300}];
+const SUBS_KEY=['Ingest','Transform','SAIM','SERL','Orders','Geo/Route','Notify','Pixel'];
+// baseline profile (equal weight)
+const BASE_PROFILE={Ingest:1,Transform:1,SAIM:1,SERL:1,Orders:1,'Geo/Route':1,Notify:1,Pixel:1};
+let liveMarket='Pan-Africa';
+const barsEl=document.getElementById('bars');
+function renderBars(){barsEl.innerHTML=SUBS.map(s=>`<div class="bar"><div class="l">${s.n}</div>
+  <div class="v">${Math.round(s.v)}</div><div class="u">evt/s</div></div>`).join('');}
+let playing=true,liveTimer;
+function tick(){
+  const p=(window.__marketProfile||BASE_PROFILE);
+  SUBS.forEach(s=>{ const w=p[s.n]||1; s.v=(s.v*(0.82+Math.random()*0.32))*(0.6+0.4*w); });
+  renderBars();
+}
+function startLive(){stopLive();liveTimer=setInterval(tick,1100);}
+function stopLive(){if(liveTimer)clearInterval(liveTimer);}
+renderBars();startLive();
+const pb=document.getElementById('playBtn');
+pb.onclick=()=>{playing=!playing;if(playing){startLive();pb.textContent='Pause';}else{stopLive();pb.textContent='Play';}};
+
+// ---- tweaks ----
+const tweaks=document.getElementById('tweaks');
+document.getElementById('twBtn').onclick=()=>tweaks.classList.toggle('open');
+function seg(id,fn){document.querySelectorAll(`#${id} button`).forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(`#${id} button`).forEach(x=>x.classList.remove('on'));b.classList.add('on');fn(b.dataset.v);});}
+seg('segTheme',v=>{document.documentElement.dataset.theme=v;ls('theme',v);});
+seg('segDens',v=>{document.documentElement.dataset.density=v;ls('density',v);});
+const swp=document.getElementById('swPresent');swp.onclick=()=>{swp.classList.toggle('on');document.body.classList.toggle('present',swp.classList.contains('on'));};
+const swm=document.getElementById('swMotion');swm.onclick=()=>{swm.classList.toggle('on');document.documentElement.classList.toggle('rm',swm.classList.contains('on'));};
+function ls(k,v){try{localStorage.setItem('showcase_'+k,v)}catch(e){}}
+try{
+  const t=localStorage.getItem('showcase_theme');if(t){document.documentElement.dataset.theme=t;
+    document.querySelectorAll('#segTheme button').forEach(b=>b.classList.toggle('on',b.dataset.v===t));}
+  const d=localStorage.getItem('showcase_density');if(d){document.documentElement.dataset.density=d;
+    document.querySelectorAll('#segDens button').forEach(b=>b.classList.toggle('on',b.dataset.v===d));}
+}catch(e){}
+
+// ---- Interactive #africa section ----
+function initAfrica(){
+  const NODES=[
+    {x:54,y:46,name:'Nairobi (ASF 2026)',fit:96,mod:'scents/ · wismo/ · ASF Kenya',icon:'hub',
+      profile:{Ingest:1.1,Transform:1,SAIM:1.1,SERL:1,Orders:1,'Geo/Route':1,Notify:1.1,Pixel:1},
+      body:'The festival anchor. SCENTS × WISMO fit the exact thesis on the ASF stage: capital + startups + culture building commerce infrastructure for markets where the phone is the bank and the map.'},
+    {x:48,y:30,name:'Lagos',fit:91,mod:'wismo/ portal · notification :3003',icon:'notify',
+      profile:{Ingest:1.2,Transform:1,SAIM:1,SERL:1.3,Orders:1.1,'Geo/Route':1,Notify:1.4,Pixel:1.1},
+      body:'West-Africa megacity with dense informal corridors. WhatsApp-first WISMO plus SERL entity resolution handle fragmented identity and address data at scale.'},
+    {x:50,y:62,name:'Lusaka',fit:83,mod:'scents/ graph :8182',icon:'graph',
+      profile:{Ingest:1,Transform:1,SERL:1.2,SAIM:1.1,Orders:1,'Geo/Route':1,Notify:1,Pixel:1},
+      body:'Cross-border trade hub. SCENTS reasons over multi-source movement on JanusGraph, turning patchy records into a queryable relationship picture.'},
+    {x:42,y:54,name:'Kinshasa',fit:80,mod:'serl/ ditto+splink',icon:'resolve',
+      profile:{Ingest:1,Transform:1,SAIM:1,SERL:1.5,Orders:1,'Geo/Route':1,Notify:1.1,Pixel:1},
+      body:'High-fragmentation market. SERL deduplicates merchants, riders, and customers across noisy ledgers — the difference between a usable network and a ghost one.'},
+    {x:58,y:38,name:'Addis Ababa',fit:84,mod:'transform/ spark',icon:'transform',
+      profile:{Ingest:1.2,Transform:1.4,SAIM:1,SERL:1,Orders:1,'Geo/Route':1,Notify:1,Pixel:1},
+      body:'Logistics gateway. SCENTS batch + Spark transform heterogeneous supply signals into model-ready features for forecasting and routing.'},
+    {x:46,y:72,name:'Cape Town',fit:78,mod:'wismo/ geo+route :3002',icon:'route',
+      profile:{Ingest:1.1,Transform:1,SAIM:1,Orders:1.1,'Geo/Route':1.5,Notify:1.2,Pixel:1.2},
+      body:'Complex metro last-mile. Geo/Route optimization and live rider tracking cut failed-delivery loops that erode trust.'},
+    {x:62,y:56,name:'Dar es Salaam',fit:82,mod:'wismo/ pixel :3007',icon:'shield',
+      profile:{Ingest:1,Transform:1,SAIM:1,Orders:1,'Geo/Route':1.1,Notify:1,Pixel:1.5},
+      body:'Coastal corridor. The privacy-safe pixel proves delivery events without over-collecting — aligned with local trust norms.'},
+    {x:44,y:36,name:'Accra',fit:81,mod:'wismo/ portal · serl',icon:'notify',
+      profile:{Ingest:1.1,Transform:1,SAIM:1,SERL:1.2,Orders:1,'Geo/Route':1,Notify:1.3,Pixel:1.1},
+      body:'Fast-moving retail + fintech hub. WhatsApp notifications and SERL entity resolution anchor a trust-first commerce layer.'},
+    {x:40,y:38,name:'Abidjan',fit:79,mod:'scents/ graph · transform',icon:'graph',
+      profile:{Ingest:1.1,Transform:1.2,SAIM:1,SERL:1.1,Orders:1,'Geo/Route':1,Notify:1.1,Pixel:1},
+      body:'Côte d’Ivoire gateway. SCENTS graph + transform fuse port and corridor signals for regional distribution visibility.'},
+    {x:56,y:50,name:'Kampala',fit:80,mod:'wismo/ geo+route · pixel',icon:'route',
+      profile:{Ingest:1,Transform:1,SAIM:1,Orders:1,'Geo/Route':1.2,Notify:1.2,Pixel:1.3},
+      body:'Inland logistics crossroads. Geo/Route and the privacy-safe pixel keep rural last-mile accountable.'},
+    {x:52,y:78,name:'Maputo',fit:77,mod:'scents/ graph · wismo/ orders',icon:'graph',
+      profile:{Ingest:1.1,Transform:1,SAIM:1,SERL:1.1,Orders:1.2,'Geo/Route':1,Notify:1,Pixel:1.1},
+      body:'Southern-corridor port. Order + graph linkage tracks cross-border freight through to final delivery.'},
+    {x:36,y:33,name:'Dakar',fit:76,mod:'wismo/ notification · serl',icon:'notify',
+      profile:{Ingest:1.1,Transform:1,SAIM:1,SERL:1.2,Orders:1,'Geo/Route':1,Notify:1.3,Pixel:1},
+      body:'West-Africa Atlantic node. WhatsApp-first status and entity resolution serve a fragmented SME merchant base.'},
+    {x:34,y:30,name:'Casablanca',fit:75,mod:'scents/ transform · saim',icon:'transform',
+      profile:{Ingest:1.2,Transform:1.3,SAIM:1.2,SERL:1,Orders:1,'Geo/Route':1,Notify:1,Pixel:1},
+      body:'North-Africa bridge to Europe/Africa trade. Heavy transform + SAIM reasoning for multimodal forecasting.'}
+  ];
+  const ICONS={
+    hub:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7.5" stroke-opacity=".5"/><path d="M12 1.5v3.5M12 19v3.5M1.5 12h3.5M19 12h3.5M5 5l2.5 2.5M16.5 16.5 19 19M19 5l-2.5 2.5M5 19l2.5-2.5"/>',
+    notify:'<path d="M4 5h16v10H9.5L5 19v-4H4z"/><path d="M8.4 10.6 10.7 12.9 15.1 8.7"/>',
+    graph:'<circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="12" r="2.4"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M7.6 7 10.4 10.8M16.4 7 13.6 10.8M7.6 17 10.4 13.2M16.4 17 13.6 13.2M8 6h8M8 18h8" stroke-opacity=".7"/>',
+    resolve:'<rect x="4.5" y="6" width="7" height="9" rx="1.5"/><rect x="12.5" y="6" width="7" height="9" rx="1.5"/><path d="M11 10.5h2"/><path d="M12 15.5V19M9.8 17l2.2 2.2 2.2-2.2"/>',
+    transform:'<path d="M3 13c1.2-3 2.4-3 3.6 0s2.4 3 3.6 0 2.4-3 3.6 0 2.4 3 3.6 0"/><path d="M14 19v-5M17.5 19V8M21 19v-8"/>',
+    route:'<path d="M4 20C4 13 9 16 12 11S19 9 20 4" stroke-dasharray="2 3"/><circle cx="4" cy="20" r="2.2"/><circle cx="12" cy="11" r="2"/><circle cx="20" cy="4" r="2.2"/>',
+    shield:'<path d="M12 3 5 6v6c0 4 3 6.4 7 9 4-2.6 7-5 7-9V6Z"/><path d="M9.5 10.5h2v2h-2zM13 13.5h2v2h-2z"/><path d="M6.5 6.5 17.5 17.5"/>'
+  };
+  const svgWrap=s=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${s}</svg>`;
+  const ALIGN={
+    tlcom:['spatial','entity'], flourish:['lastmile','privacy'], acumen:['spatial','lastmile'],
+    antler:['entity','privacy'], capria:['spatial','entity'], safaricom:['lastmile','privacy'], mtn:['lastmile','entity']
+  };
+  const box=document.getElementById('mapbox');
+  const insTitle=document.getElementById('insTitle'), insBody=document.getElementById('insBody'),
+        fitPct=document.getElementById('fitPct'), fitBar=document.getElementById('fitBar'), insMod=document.getElementById('insMod'),
+        maphint=document.getElementById('maphint');
+  const whyCards=document.querySelectorAll('.why .c');
+  // subsystem (from SUBS names) -> "why it fits" capability card
+  const SUBSYS_CAP={'Ingest':'spatial','Transform':'spatial','SAIM':'spatial',
+    'Orders':'lastmile','Geo/Route':'lastmile','Notify':'lastmile','SERL':'entity','Pixel':'privacy'};
+  const CAP_PRIORITY=['entity','privacy','lastmile','spatial']; // tie-break toward the more distinctive fit
+  function deriveCap(profile){
+    let best=null,bestW=-1;
+    for(const k in SUBSYS_CAP){const w=(profile&&profile[k])||0; if(w>bestW+1e-9){bestW=w;best=k;}}
+    if(!best) return 'spatial';
+    // collect all subsystems tied at the max weight, pick by priority
+    const tied=Object.keys(SUBSYS_CAP).filter(k=>Math.abs(((profile&&profile[k])||0)-bestW)<1e-9);
+    tied.sort((a,b)=>CAP_PRIORITY.indexOf(SUBSYS_CAP[a])-CAP_PRIORITY.indexOf(SUBSYS_CAP[b]));
+    return SUBSYS_CAP[tied[0]];
+  }
+  function highlightWhy(key){
+    whyCards.forEach(c=>{
+      const on=c.dataset.k===key;
+      c.classList.toggle('sel',on);
+      c.style.opacity=on?'1':'.4';
+    });
+  }
+  function select(n){
+    document.querySelectorAll('.hot').forEach(h=>h.classList.toggle('sel',h.dataset.x==n.x&&h.dataset.y==n.y));
+    insTitle.textContent=n.name; insBody.textContent=n.body;
+    fitPct.textContent=n.fit+'%'; fitBar.style.width=n.fit+'%'; insMod.textContent=n.mod;
+    // drive the live SIM throughput demo from this market
+    window.__marketProfile=n.profile||BASE_PROFILE; liveMarket=n.name;
+    const liveEl=document.querySelector('#live .live');
+    if(liveEl) liveEl.innerHTML='<span class="dot"></span> SIM · '+n.name.split(' ')[0].toUpperCase();
+    // highlight the "why it fits" card that this city's profile emphasizes
+    highlightWhy(deriveCap(n.profile));
+  }
+  NODES.forEach(n=>{
+    const h=document.createElement('div'); h.className='hot'; h.dataset.x=n.x; h.dataset.y=n.y;
+    h.style.left=n.x+'%'; h.style.top=n.y+'%';
+    h.innerHTML='<span class="ring"></span>'+svgWrap(ICONS[n.icon]||ICONS.hub);
+    const lbl=document.createElement('div'); lbl.className='hotlabel'; lbl.style.left=n.x+'%'; lbl.style.top=n.y+'%'; lbl.textContent=n.name.split(' ')[0];
+    h.onclick=()=>select(n);
+    box.appendChild(h); box.appendChild(lbl);
+  });
+  // why-cards
+  document.querySelectorAll('.why .c').forEach(c=>{
+    c.onclick=()=>{document.querySelectorAll('.why .c').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');};
+  });
+  // investor chips
+  const invs=document.querySelectorAll('#investors .inv');
+  invs.forEach(inv=>inv.onclick=()=>{
+    const on=inv.classList.toggle('on');
+    invs.forEach(o=>{if(o!==inv)o.classList.remove('on');});
+    document.querySelectorAll('.why .c').forEach(c=>{
+      const k=c.dataset.k; const want=ALIGN[inv.dataset.i]||[];
+      c.style.opacity=(!on||want.includes(k))?'1':'.35';
+      if(!on) c.classList.remove('sel');
+    });
+    document.getElementById('invhint').textContent = on
+      ? `Emphasizing ${inv.textContent} thesis → ${ALIGN[inv.dataset.i].join(' + ')}`
+      : 'Select an investor/partner to emphasize the relevant capability. (Illustrative alignment — verify each thesis independently.)';
+  });
+  select(NODES[0]);
+}
+initAfrica();
+
+</script>
+</body>
+</html>
