@@ -110,6 +110,18 @@
   .track-foot .eta{color:var(--amber);font-size:15px;font-weight:600}
   .track-foot .city{color:var(--muted)}
   .err{color:var(--red);font-family:var(--mono);font-size:12px;min-height:16px;margin-top:-8px;margin-bottom:8px}
+  /* ---------- PROCESS SIMULATION STRIP ---------- */
+  .proc{display:flex;gap:6px;margin:2px 0 12px}
+  .proc-step{flex:1;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;opacity:.45;transition:.25s}
+  .proc-step .ps-num{width:26px;height:26px;border-radius:50%;border:2px solid var(--line-2);display:grid;place-items:center;
+    font-family:var(--mono);font-size:11px;color:var(--muted-2);background:var(--navy);transition:.25s}
+  .proc-step .ps-lb{font-size:10.5px;color:var(--muted-2);line-height:1.2;max-width:64px}
+  .proc-step.active{opacity:1}
+  .proc-step.active .ps-num{border-color:var(--amber);color:var(--amber);box-shadow:0 0 0 4px rgba(232,184,93,.16);animation:pulseA 1.4s infinite}
+  .proc-step.done{opacity:1}
+  .proc-step.done .ps-num{background:var(--teal);border-color:var(--teal);color:#fff}
+  .proc-step.done .ps-lb{color:var(--ink)}
+  .proc-msg{font-family:var(--mono);font-size:11.5px;color:var(--teal-lt);min-height:15px;margin:-4px 0 10px;text-align:center}
 
   /* ---------- LOGO BAND ---------- */
   .band{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(14,27,46,.5);
@@ -323,6 +335,8 @@
         <button type="submit" id="trackBtn">Track</button>
       </form>
       <div class="err" id="trackErr"></div>
+      <div class="proc" id="procSteps"></div>
+      <div class="proc-msg" id="procMsg">Click Track to simulate the full WISMO flow.</div>
       <div class="route-viz" aria-hidden="true">
         <svg viewBox="0 0 320 62" preserveAspectRatio="none">
           <defs><linearGradient id="rp" x1="0" y1="62" x2="320" y2="2" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0B5563"/><stop offset="1" stop-color="#E8B85D"/></linearGradient></defs>
@@ -668,17 +682,68 @@ function render(res){
   pkg.setAttribute('cx', pt.x); pkg.setAttribute('cy', pt.y);
 }
 
+// 4-step Shopper process, mapped to real WISMO services
+const SIM_STEPS = [
+  {n:1, lb:'Message in',     msg:'WhatsApp → “WMO-4821?”',              svc:'gateway · :3000'},
+  {n:2, lb:'Match order',    msg:'order-service lookup',                svc:'order · :3001'},
+  {n:3, lb:'Resolve location',msg:'geo + route compute',                svc:'geo/route · :3002'},
+  {n:4, lb:'Reply with ETA', msg:'notification service pushes reply',   svc:'notify · :3003'},
+];
+const procSteps = document.getElementById('procSteps');
+const procMsg = document.getElementById('procMsg');
+procSteps.innerHTML = SIM_STEPS.map(s=>`<div class="proc-step" data-n="${s.n}">
+  <span class="ps-num">${s.n}</span><span class="ps-lb">${s.lb}</span></div>`).join('');
+
+const ROUTE_LEN = 340; // matches routeLive dasharray length set in CSS
+function setRoute(prog){
+  prog = Math.max(0, Math.min(1, prog));
+  routeLive.style.strokeDashoffset = String(ROUTE_LEN - ROUTE_LEN*prog);
+  const at = routeLive.getTotalLength()*prog;
+  const pt = routeLive.getPointAtLength(at);
+  pkg.setAttribute('cx', pt.x); pkg.setAttribute('cy', pt.y);
+}
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+
 async function track(){
   const id = oid.value.trim();
   err.textContent='';
   if(!id){err.textContent='Enter an order ID.';return;}
-  btn.disabled=true; btn.textContent='…';
+  btn.disabled=true; btn.textContent='Tracking…';
+  procMsg.textContent='Starting simulation…';
+  // reset
+  setRoute(0);
+  const stepEls = [...procSteps.querySelectorAll('.proc-step')];
+  stepEls.forEach(e=>e.classList.remove('done','active'));
+
+  // 1) animate the 4-step process, advancing the route + package as it runs
+  for(let i=0;i<SIM_STEPS.length;i++){
+    const s = SIM_STEPS[i];
+    stepEls[i].classList.add('active');
+    procMsg.textContent = `${s.msg}  ·  ${s.svc}`;
+    // route progress: step i fills 0 → (i+1)/4
+    const from = i/4, to = (i+1)/4;
+    const t0 = performance.now(), dur = 620;
+    await new Promise(res=>{
+      function anim(t){
+        const k = Math.min(1,(t-t0)/dur);
+        setRoute(from + (to-from)*k);
+        if(k<1) requestAnimationFrame(anim); else res();
+      }
+      requestAnimationFrame(anim);
+    });
+    stepEls[i].classList.remove('active');
+    stepEls[i].classList.add('done');
+  }
+  procMsg.textContent = 'Order matched — fetching live status…';
+
+  // 2) confirm with the real endpoint, then render authoritative result
   try{
     const r = await fetch('/api/track?orderId='+encodeURIComponent(id));
     const res = await r.json();
-    if(!res.ok){err.textContent=res.error||'Not found.';return;}
+    if(!res.ok){err.textContent=res.error||'Not found.'; procMsg.textContent='Track failed.'; return;}
     render(res);
-  }catch(e){ err.textContent='Connection issue — is the dashboard host running?'; }
+    procMsg.textContent = `Delivered to customer · ${res.carrier||'SCENTS'} · ETA ${res.eta_min!=null?res.eta_min+' min':'—'}`;
+  }catch(e){ err.textContent='Connection issue — is the dashboard host running?'; procMsg.textContent='Offline.'; }
   finally{ btn.disabled=false; btn.textContent='Track'; }
 }
 form.addEventListener('submit',e=>{e.preventDefault();track();});
