@@ -194,12 +194,43 @@
   .rider .cta:hover{border-color:var(--amber);color:var(--amber)}
   @media(max-width:760px){.rider{grid-template-columns:1fr;gap:16px}.rider .cta{justify-content:center}}
 
-  /* ---------- ARCH ---------- */
-  .arch{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:8px}
-  .arch .node{background:var(--panel-2);border:1px solid var(--line-2);border-radius:12px;padding:14px 12px;text-align:center}
-  .arch .node .nm{font-size:13px;font-weight:600;margin-top:9px}
-  .arch .node .pt{font-family:var(--mono);font-size:10.5px;color:var(--teal-lt);margin-top:3px}
-  .arch .node svg{width:30px;height:30px;display:block;margin:0 auto}
+  /* ---------- INTERACTIVE PIPELINE ---------- */
+  .pipe{display:grid;grid-template-columns:1.55fr 1fr;gap:20px;margin-top:12px;align-items:stretch}
+  .pipe-stage{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line-2);
+    border-radius:var(--r-lg);padding:18px 16px;display:flex;align-items:center}
+  #pipeSvg{width:100%;height:auto;display:block}
+  .pipe-node{cursor:pointer}
+  .pipe-node .pn-box{fill:var(--navy-2);stroke:var(--line-2);stroke-width:1.5;transition:.18s}
+  .pipe-node:hover .pn-box{stroke:var(--teal)}
+  .pipe-node.sel .pn-box{stroke:var(--amber);stroke-width:2.2;fill:#0B2E4F}
+  .pipe-node .pn-glyph{stroke:#19A0BF;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .pipe-node.sel .pn-glyph{stroke:var(--amber)}
+  .pipe-node .pn-nm{fill:var(--ink);font-size:12px;font-weight:600;text-anchor:middle;font-family:var(--ui)}
+  .pipe-node .pn-pt{fill:var(--teal-lt);font-size:9.5px;text-anchor:middle;font-family:var(--mono)}
+  .pipe-node .pn-dot{fill:var(--muted-2)}
+  .pipe-node.up .pn-dot{fill:var(--green)}
+  .pipe-node.down .pn-dot{fill:var(--red)}
+  #pipePulse{filter:drop-shadow(0 0 5px rgba(232,184,93,.8));animation:pulseMove 5.5s linear infinite}
+  @keyframes pulseMove{from{stroke-dashoffset:0}to{stroke-dashoffset:-960}}
+  #pipeGlow{animation:glowFlow 5.5s linear infinite}
+  @keyframes glowFlow{from{stroke-dashoffset:0}to{stroke-dashoffset:-960}}
+  .pipe-detail{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line-2);
+    border-radius:var(--r-lg);padding:20px 22px;min-height:180px}
+  .pd-empty{color:var(--muted-2);font-size:14px;display:flex;align-items:center;height:100%;text-align:center;justify-content:center}
+  .pd-tag{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;
+    text-transform:uppercase;padding:3px 9px;border-radius:20px;background:var(--teal-lt);color:var(--teal);margin-bottom:10px}
+  .pd-h{font-size:19px;font-weight:700;margin:0 0 4px;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
+  .pd-h .pd-dot{width:10px;height:10px;border-radius:50%;background:var(--green)}
+  .pd-h .pd-dot.down{background:var(--red)}
+  .pd-port{font-family:var(--mono);font-size:13px;color:var(--amber);margin-bottom:12px}
+  .pd-desc{color:var(--muted);font-size:14.5px;line-height:1.55;margin:0 0 14px}
+  .pd-rows{display:grid;gap:8px}
+  .pd-row{display:flex;justify-content:space-between;gap:12px;font-size:13px;border-top:1px solid var(--line);padding-top:8px}
+  .pd-row .k{color:var(--muted-2);font-family:var(--mono);font-size:11.5px}
+  .pd-row .v{color:var(--ink);font-family:var(--mono);font-size:12px;text-align:right}
+  .pd-cta{display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:var(--navy);border:1px solid var(--line-2);
+    color:var(--ink);font-weight:600;font-size:13px;padding:10px 15px;border-radius:11px;transition:.16s}
+  .pd-cta:hover{border-color:var(--amber);color:var(--amber)}
 
   /* ---------- SYSTEM STATUS ---------- */
   .status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
@@ -231,9 +262,9 @@
     .hero{grid-template-columns:1fr;gap:34px;padding:48px 0 36px}
     .panel.on{grid-template-columns:1fr;gap:22px}
     .mod-grid{grid-template-columns:1fr 1fr}
-    .arch{grid-template-columns:repeat(3,1fr)}
+    .pipe{grid-template-columns:1fr}
   }
-  @media(max-width:540px){.mod-grid{grid-template-columns:1fr}.arch{grid-template-columns:repeat(2,1fr)}.final{padding:30px 20px}}
+  @media(max-width:540px){.mod-grid{grid-template-columns:1fr}.pipe{grid-template-columns:1fr}.final{padding:30px 20px}}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.route-path-live{stroke-dashoffset:0!important}}
 </style>
 </head>
@@ -408,14 +439,27 @@
   </div>
   </section>
 
-  <!-- ARCH -->
+  <!-- ARCH / INTERACTIVE FLOWCHART -->
   <section class="block" id="arch">
     <div class="s-head">
       <p class="s-ey">How it fits together</p>
       <h2 class="s-h">A clean, observable pipeline</h2>
-      <p class="s-sub">Requests enter at the gateway, fan out to order / geo / route, and surface through notifications, the portal, and BI.</p>
+      <p class="s-sub">Requests enter at the gateway, fan out to order / geo / route, and surface through notifications, the portal, and BI. Click any node to inspect the service — health is read live from the running stack.</p>
     </div>
-    <div class="arch" id="arch"></div>
+    <div class="pipe">
+      <div class="pipe-stage">
+        <svg id="pipeSvg" viewBox="0 0 960 120" preserveAspectRatio="xMidYMid meet" role="img" aria-label="WISMO pipeline">
+          <!-- connectors drawn by JS -->
+          <path id="pipeBase" d="" fill="none" stroke="#27425E" stroke-width="2.5" stroke-dasharray="3 6"/>
+          <path id="pipeGlow" d="" fill="none" stroke="#0E7490" stroke-width="3" stroke-linecap="round" stroke-dasharray="60 900" stroke-dashoffset="0"/>
+          <circle id="pipePulse" r="5" fill="#E8B85D" />
+          <g id="pipeNodes"></g>
+        </svg>
+      </div>
+      <div class="pipe-detail" id="pipeDetail">
+        <div class="pd-empty">Select a node to inspect the service.</div>
+      </div>
+    </div>
   </section>
 
   <!-- SYSTEM STATUS -->
@@ -462,16 +506,105 @@ const MODULES = [
   {id:'delphi', name:'Delphi BI', port:'5025', tag:'intel', glyph:'M4 19V5M4 19h16M8 15l3-4 3 2 4-6', desc:'Operational intelligence — SLAs, exceptions, and forecast accuracy across every order.'},
 ];
 const ARCH = [
-  {nm:'Gateway', pt:'3000', g:'M4 12h16M4 12l4-4M4 12l4 4'},
-  {nm:'Order', pt:'3001', g:'M5 4h14v16H5zM8 8h8M8 12h8'},
-  {nm:'Geo/Route', pt:'3002', g:'M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zM12 11a2 2 0 100-4 2 2 0 000 4z'},
-  {nm:'Notify', pt:'3003', g:'M4 6h16v10H7l-3 3z'},
-  {nm:'Portal', pt:'UI', g:'M3 10l9-6 9 6M5 10v9h14v-9'},
-  {nm:'Delphi', pt:'5025', g:'M4 19V5M4 19h16M8 15l3-4 3 2 4-6'},
+  {id:'gateway', nm:'Gateway', pt:'3000', gw:'/orders', link:'/', glyph:'M4 12h16M4 12l4-4M4 12l4 4',
+   layer:'edge', desc:'Single entry point for WhatsApp, portal, and API traffic. Authenticates and fans every request to the right downstream service.',
+   detail:[['Protocol','HTTPS · WebSocket'],['Routes','orders, geo, route, notify, pixel, are, bridge, delphi'],['TLS','terminated at edge']]},
+  {id:'order', nm:'Order', pt:'3001', gw:'/orders', link:'/', glyph:'M5 4h14v16H5zM8 8h8M8 12h8M8 16h5',
+   layer:'core', desc:'Source of truth for an order’s lifecycle — created, matched, looked up, and resolved. Emits events on every status change.',
+   detail:[['Store','Postgres (in-memory fallback)'],['Endpoints','GET/POST /v1/orders · /v1/merchants'],['Emits','order.created · order.status']]},
+  {id:'georoute', nm:'Geo / Route', pt:'3002', gw:'/geo', link:'/', glyph:'M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zM12 11a2 2 0 100-4 2 2 0 000 4z',
+   layer:'core', desc:'Locks the delivery location and computes the optimal route, with live reroute support when a rider falls behind.',
+   detail:[['Resolves','lat/lng from address or QR'],['Computes','ETA + optimal path'],['Pushes','reroute to rider app']]},
+  {id:'notify', nm:'Notify', pt:'3003', gw:'/notify', link:'/', glyph:'M4 6h16v10H7l-3 3zM8 10h8M8 13h5',
+   layer:'out', desc:'Pushes proactive ETA alerts and status changes to WhatsApp and the customer portal the moment an order moves.',
+   detail:[['Channels','WhatsApp · in-app'],['Triggers','status → message'],['Format','templated, localized']]},
+  {id:'portal', nm:'Portal', pt:'UI', gw:null, link:'/', glyph:'M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5',
+   layer:'ui', desc:'A self-serve view where customers track orders, scan QR, and see the live thread — the face of WISMO.',
+   detail:[['Surface','responsive web'],['Features','live track · QR scan'],['Source','dashboard host :8090']]},
+  {id:'delphi', nm:'Delphi', pt:'5025', gw:'/delphi', link:'/', glyph:'M4 19V5M4 19h16M8 15l3-4 3 2 4-6',
+   layer:'intel', desc:'Operational intelligence — SLAs, exceptions, and forecast accuracy across every order, aggregated from the whole stack.',
+   detail:[['Engine','JanusGraph · SAIM'],['Surfaces','SLA · exceptions · forecast'],['Port','5025 (FastAPI)']]},
 ];
 
 function svg(p, color){
   return `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${p}"/></svg>`;
+}
+
+// ---------- Interactive pipeline ----------
+const pipeSvg = document.getElementById('pipeSvg');
+const pipeNodes = document.getElementById('pipeNodes');
+const pipeBase = document.getElementById('pipeBase');
+const pipeGlow = document.getElementById('pipeGlow');
+const pipePulse = document.getElementById('pipePulse');
+const pipeDetail = document.getElementById('pipeDetail');
+const VB_W = 960, VB_H = 120, N = ARCH.length;
+const NODE_W = 132, NODE_H = 78;
+const nodeCX = ARCH.map((_, i) => 40 + i * ((VB_W - 80) / (N - 1)));
+const nodeY = VB_H/2 - NODE_H/2;
+let selectedId = null;
+const healthMap = {}; // gw-path -> bool
+
+function buildPipe(){
+  // connector path (zig through node centers)
+  const pts = nodeCX.map((x) => [x, VB_H/2]);
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i=1;i<pts.length;i++) d += ` L ${pts[i][0]} ${pts[i][1]}`;
+  pipeBase.setAttribute('d', d);
+  pipeGlow.setAttribute('d', d);
+  // pulse travels along the path
+  pipePulse.style.offsetPath = `path('${d}')`;
+  try { pipePulse.style.offsetPath = `path("${d}")`; } catch(e){}
+  if (pipePulse.animate){
+    const len = pipeBase.getTotalLength ? pipeBase.getTotalLength() : 900;
+    pipePulse.setAttribute('cx', pts[0][0]); pipePulse.setAttribute('cy', pts[0][1]);
+    pipePulse.innerHTML = '';
+  }
+  // nodes
+  pipeNodes.innerHTML = ARCH.map((a, i) => {
+    const cx = nodeCX[i];
+    const bx = cx - NODE_W/2;
+    const sel = selectedId===a.id ? ' sel':'';
+    const hc = a.gw ? (healthMap[a.gw]===false ? ' down' : (healthMap[a.gw]===true ? ' up' : '')) : '';
+    return `<g class="pipe-node${sel}${hc}" data-id="${a.id}" data-i="${i}" transform="translate(${bx},${nodeY})">
+      <rect class="pn-box" width="${NODE_W}" height="${NODE_H}" rx="12"/>
+      <g class="pn-glyph" transform="translate(${NODE_W/2-13},14) scale(1.05)">${svgPath(a.glyph)}</g>
+      <circle class="pn-dot" cx="${NODE_W-16}" cy="16" r="5"/>
+      <text class="pn-nm" x="${NODE_W/2}" y="${NODE_H-26}">${a.nm}</text>
+      <text class="pn-pt" x="${NODE_W/2}" y="${NODE_H-12}">:${a.pt}</text>
+    </g>`;
+  }).join('');
+  pipeNodes.querySelectorAll('.pipe-node').forEach(g => {
+    g.addEventListener('click', () => selectNode(g.dataset.id));
+  });
+}
+
+function svgPath(p){
+  return `<path d="${p}"/>`;
+}
+
+function selectNode(id){
+  selectedId = id;
+  const a = ARCH.find(x => x.id === id);
+  const up = a.gw ? (healthMap[a.gw]===true) : null;
+  pipeDetail.innerHTML = `
+    <span class="pd-tag">${a.layer}</span>
+    <h3 class="pd-h"><span class="pd-dot ${up===false?'down':''}"></span>${a.nm}</h3>
+    <div class="pd-port">port :${a.pt}${a.gw?` · ${up===true?'● live':up===false?'○ down':'● status'}` : ' · UI surface'}</div>
+    <p class="pd-desc">${a.desc}</p>
+    <div class="pd-rows">${a.detail.map(r=>`<div class="pd-row"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('')}</div>
+    <a class="pd-cta" href="${a.link}">Open dashboard →</a>`;
+  buildPipe();
+}
+
+// map gateway route prefixes to ARCH gw keys; fetch live health and light nodes
+const GW_ROUTE_TO_KEY = {'/orders':'/orders','/merchants':'/orders','/geo':'/geo','/route':'/geo','/notify':'/notify','/delphi':'/delphi'};
+function loadPipeHealth(){
+  const local = location.hostname==='localhost' || location.hostname==='127.0.0.1' || location.port==='8090';
+  if(!local) return; // hosted demo has no live backend
+  fetch('http://localhost:3000/health').then(r=>r.json()).then(d=>{
+    (d.services||[]).forEach(s=>{ const k=GW_ROUTE_TO_KEY[s.route]; if(k) healthMap[k] = (s.status===200); });
+    buildPipe();
+  }).catch(()=>{});
 }
 
 // build module cards
@@ -486,13 +619,9 @@ MODULES.forEach(m=>{
   mg.appendChild(a);
 });
 
-// build arch
-const arch = document.getElementById('arch');
-ARCH.forEach(a=>{
-  const d=document.createElement('div'); d.className='node';
-  d.innerHTML = svg(a.g,'#19A0BF') + `<div class="nm">${a.nm}</div><div class="pt">:${a.pt}</div>`;
-  arch.appendChild(d);
-});
+// build + light the pipeline (health comes from gateway)
+buildPipe();
+loadPipeHealth();
 
 // ---------- Tabs ----------
 document.querySelectorAll('.tab').forEach(t=>{
