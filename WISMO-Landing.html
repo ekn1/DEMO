@@ -449,7 +449,7 @@
       <h4>Rider App</h4>
       <p>The field side of WISMO — riders get turn-by-turn delivery, scan-to-confirm, and live reroute pushes straight from the Geo / Route service. One tap updates status; the customer sees it instantly.</p>
     </div>
-    <a class="cta" href="/wismo/rider.html">Explore the rider app →</a>
+    <a class="cta" href="/wismo/rider">Explore the rider app →</a>
   </div>
   </section>
 
@@ -496,7 +496,7 @@
     <p>WISMO gives your customers certainty, your operators control, and your business a single source of delivery truth.</p>
     <div class="hero-cta">
       <a class="btn btn-pri" href="#demo">Try the live track demo ↑</a>
-      <a class="btn btn-ghost" href="/wismo/index.html">Open the full dashboard</a>
+      <a class="btn btn-ghost" href="/wismo/">Open the full dashboard</a>
     </div>
   </section>
 </div>
@@ -625,7 +625,7 @@ function loadPipeHealth(){
 const mg = document.getElementById('modGrid');
 MODULES.forEach(m=>{
   const a = document.createElement('a');
-  a.className='mod'; a.href = m.id==='portal' ? '/wismo/portal.html' : (m.id==='delphi' ? '/wismo/bi.html' : '/wismo/index.html');
+  a.className='mod'; a.href = m.id==='portal' ? '/wismo/portal' : (m.id==='delphi' ? '/wismo/bi' : '/wismo/');
   a.innerHTML = `<span class="tag">${m.tag}</span>
     <div class="chip"><div class="glyph">${svg(m.glyph,'#E8B85D')}</div></div>
     <h4>${m.name}</h4><p>${m.desc}</p>
