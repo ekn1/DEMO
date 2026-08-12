@@ -122,6 +122,11 @@
   .proc-step.done .ps-num{background:var(--teal);border-color:var(--teal);color:#fff}
   .proc-step.done .ps-lb{color:var(--ink)}
   .proc-msg{font-family:var(--mono);font-size:11.5px;color:var(--teal-lt);min-height:15px;margin:-4px 0 10px;text-align:center}
+  #swarm .flow .step{opacity:.55;transition:.25s}
+  #swarm .flow .step.active{opacity:1}
+  #swarm .flow .step:hover{opacity:1}
+  #swarm .flow .step .n{border:2px solid var(--line-2);border-radius:50%;width:27px;height:27px;display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--muted-2);background:var(--navy);transition:.25s}
+  #swarm .flow .step.active .n{border-color:var(--amber);color:var(--amber);box-shadow:0 0 0 4px rgba(232,184,93,.16);animation:pulseA 1.4s infinite}
 
   /* ---------- LOGO BAND ---------- */
   .band{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(14,27,46,.5);
@@ -458,19 +463,25 @@
     <div class="s-head">
       <p class="s-ey">Swarm Intelligence</p>
       <h2 class="s-h">Stress-test decisions before they happen</h2>
-      <p class="s-sub">Run multi-agent simulations against real WISMO scenarios. Inject shocks, rerun rounds, and generate structured reports — all from the merchant console.</p>
+      <p class="s-sub">Run a live simulation right here: create agents, run rounds, inject a shock, and generate a report.</p>
     </div>
     <div class="panel on" data-p="swarm">
-      <div class="flow">
-        <div class="step"><span class="n">1</span><div class="st"><b>Create</b><small>agents + world state</small></div></div>
-        <div class="step"><span class="n">2</span><div class="st"><b>Run</b><small>rounds play out</small></div></div>
-        <div class="step"><span class="n">3</span><div class="st"><b>Inject</b><small>fuel shock, route risk</small></div></div>
-        <div class="step"><span class="n">4</span><div class="st"><b>Re-run</b><small>agents re-align</small></div></div>
-        <div class="step"><span class="n">5</span><div class="st"><b>Report</b><small>structured findings</small></div></div>
+      <div class="flow" id="swarmFlow">
+        <div class="step" id="sf1"><span class="n">1</span><div class="st"><b>Create</b><small>agents + world state</small></div></div>
+        <div class="step" id="sf2"><span class="n">2</span><div class="st"><b>Run</b><small>rounds play out</small></div></div>
+        <div class="step" id="sf3"><span class="n">3</span><div class="st"><b>Inject</b><small>fuel shock, route risk</small></div></div>
+        <div class="step" id="sf4"><span class="n">4</span><div class="st"><b>Re-run</b><small>agents re-align</small></div></div>
+        <div class="step" id="sf5"><span class="n">5</span><div class="st"><b>Report</b><small>structured findings</small></div></div>
       </div>
-      <div style="margin-top:18px">
-        <a class="btn btn-pri" href="/wismo/index.html#swarm" target="_blank">Open Swarm tab →</a>
-        <p style="color:var(--muted);font-size:12px;margin-top:10px;font-family:var(--mono)">Tip: In the Swarm tab, click <b style="color:var(--teal-lt)">Run demo</b> to see an animated walkthrough without API calls.</p>
+      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-pri" id="swarmStartBtn">Run simulation</button>
+        <button class="btn btn-ghost" id="swarmStressBtn">Stress test scenario</button>
+        <button class="btn btn-ghost" id="swarmReportBtn" disabled>Generate report</button>
+      </div>
+      <div id="swarmConsole" style="margin-top:14px;background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:16px;font-family:var(--mono);font-size:12px;color:#c7cad3;line-height:1.6;white-space:pre-wrap;min-height:80px"></div>
+      <div id="swarmReportCard" style="margin-top:14px;display:none">
+        <div style="font-size:11px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Report</div>
+        <div id="swarmReportBody" style="background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:16px;font-family:var(--mono);font-size:12px;color:#c7cad3;line-height:1.6;white-space:pre-wrap"></div>
       </div>
     </div>
   </section>
@@ -807,6 +818,171 @@ setInterval(loadStatus, 15000);
 
 // initial demo render
 track();
+
+// ---------- Swarm simulation demo (client-side, no backend required) ----------
+const swarmConsole = document.getElementById('swarmConsole');
+const swarmReportCard = document.getElementById('swarmReportCard');
+const swarmReportBody = document.getElementById('swarmReportBody');
+const swarmReportBtn = document.getElementById('swarmReportBtn');
+const swarmStartBtn = document.getElementById('swarmStartBtn');
+const swarmStressBtn = document.getElementById('swarmStressBtn');
+let swarmSimulation = null;
+
+function swarmLog(text){
+  if(!swarmConsole) return;
+  swarmConsole.textContent = (swarmConsole.textContent ? swarmConsole.textContent + '\n' : '') + text;
+}
+
+function swarmHighlightStep(n){
+  [1,2,3,4,5].forEach(i=>{
+    const el = document.getElementById('sf'+i);
+    if(el) el.classList.toggle('active', i<=n);
+  });
+}
+
+class SwarmAgent {
+  constructor(spec){
+    this.agentId = 'agent-' + Math.random().toString(36).slice(2,8);
+    this.name = spec.name || 'Agent';
+    this.role = spec.role || 'ops';
+    this.entityId = spec.entity_id || 'ENT-' + Math.floor(Math.random()*900+100);
+    this.behaviorPriors = spec.behavior_priors || [];
+    this.riskAppetite = spec.riskAppetite ?? 0.5;
+  }
+  observe(world){
+    const confidence = 0.55 + this.riskAppetite * 0.35;
+    const statements = {
+      logistics_ops: `Route allocation revised for fuel_price=${world.fuel_price}, stock=${world.stock_level}.`,
+      regulator: `Compliance check updated for route_risk=${world.route_risk}. Monitoring thresholds applied.`,
+      risk_analyst: `Risk score adjusted. fuel_price impact: +${((world.fuel_price-1)*100).toFixed(1)}%.`,
+      ops: `Operational state reviewed. stock_level=${world.stock_level}, route_risk=${world.route_risk}.`,
+    };
+    return {
+      agent_id: this.agentId,
+      role: this.role,
+      confidence: Math.round(confidence * 100) / 100,
+      statement: statements[this.role] || `${this.role} observed state from ${this.role} perspective.`
+    };
+  }
+}
+
+class SwarmSimulation {
+  constructor({name, domain, initial_world, agents, max_rounds}){
+    this.simulationId = 'sim-' + Math.random().toString(36).slice(2,10);
+    this.name = name || 'demo';
+    this.domain = domain || 'wismo';
+    this.world = {...initial_world};
+    this.agents = (agents || []).map(a => new SwarmAgent(a));
+    this.maxRounds = maxRounds || 5;
+    this.rounds = [];
+    this.scenario = null;
+  }
+  runRound(){
+    const roundNumber = this.rounds.length + 1;
+    const agentStates = this.agents.map(a => a.observe(this.world));
+    const delta = {...this.world};
+    const round = { round_number: roundNumber, agent_states: agentStates, world_state_delta: delta, injected_scenario: this.scenario };
+    this.rounds.push(round);
+    this.scenario = null;
+    return round;
+  }
+  injectScenario(scenario){
+    this.scenario = scenario;
+    Object.assign(this.world, scenario);
+    return scenario;
+  }
+  runAll(){
+    while(this.rounds.length < this.maxRounds){
+      this.runRound();
+    }
+    return this.rounds;
+  }
+}
+
+function renderSwarmReport(sim){
+  const reportId = 'report-' + Math.random().toString(36).slice(2,8);
+  const findings = [
+    {tool:'world_state', data:{world: sim.world}},
+    {tool:'simulator_rounds', data:{round_count: sim.rounds.length, rounds: sim.rounds.map(r => ({round_number: r.round_number, agent_states: r.agent_states, injected_scenario: r.injected_scenario}))}},
+    {tool:'delphi_forecast', data:{topic: sim.name, forecast: 'Consensus leaning toward constrained supply through Q4.', confidence: 0.68, panel_size: 12}}
+  ];
+  const summary = findings.map(f => f.tool).sort().join('; ');
+  const lines = [
+    `Report: ${sim.name}`,
+    `ID: ${reportId}`,
+    `Domain: ${sim.domain}`,
+    `Summary: ${summary}`,
+    '',
+    'Tools:',
+    ...findings.map((f,i) => `  ${i+1}. ${f.tool}`),
+    '',
+    'World state:',
+    JSON.stringify(sim.world, null, 2),
+    '',
+    'Rounds:',
+    ...sim.rounds.map(r => `  Round ${r.round_number}: ${r.agent_states.map(s => s.role + '=' + s.confidence).join(', ')}`)
+  ];
+  swarmReportBody.textContent = lines.join('\n');
+  swarmReportCard.style.display = 'block';
+  swarmReportBtn.disabled = false;
+}
+
+if(swarmStartBtn){
+  swarmStartBtn.addEventListener('click', async () => {
+    const name = 'Nairobi fuel shock';
+    const domain = 'wismo';
+    const initial_world = {"fuel_price":1.00,"stock_level":100,"route_risk":0.2};
+    const agents = [
+      {name:'Logistics Agent', role:'logistics_ops', entity_id:'ENT-1', behavior_priors:['minimize_cost'], riskAppetite:0.6},
+      {name:'Regulator', role:'regulator', entity_id:'ENT-2', behavior_priors:['enforce_compliance'], riskAppetite:0.3}
+    ];
+    const max_rounds = 3;
+    swarmConsole.textContent = '';
+    swarmReportCard.style.display = 'none';
+    swarmReportBtn.disabled = true;
+    swarmHighlightStep(1);
+    swarmLog(`Creating simulation...\n- ${name}\n- domain: ${domain}\n- agents: ${agents.map(a=>a.name).join(', ')}\n- world: ${JSON.stringify(initial_world)}`);
+    await new Promise(r => setTimeout(r, 600));
+    swarmSimulation = new SwarmSimulation({name, domain, initial_world, agents, max_rounds});
+    swarmHighlightStep(2);
+    swarmLog(`\nRunning ${max_rounds} rounds...`);
+    await new Promise(r => setTimeout(r, 500));
+    for(let i=0;i<max_rounds;i++){
+      const round = swarmSimulation.runRound();
+      swarmLog(`\nRound ${round.round_number}:\n${round.agent_states.map(s => `  ${s.role} (${s.confidence}): ${s.statement}`).join('\n')}`);
+      await new Promise(r => setTimeout(r, 500));
+    }
+    swarmHighlightStep(5);
+    renderSwarmReport(swarmSimulation);
+    swarmLog('\nSimulation complete. Use Stress test scenario to inject a shock, then Generate report to see updated findings.');
+  });
+}
+
+if(swarmStressBtn){
+  swarmStressBtn.addEventListener('click', async () => {
+    if(!swarmSimulation){ swarmConsole.textContent = 'Run simulation first.'; return; }
+    swarmHighlightStep(3);
+    const scenario = {"fuel_price":1.20,"route_risk":0.8};
+    swarmLog(`\nInjecting scenario:\n${JSON.stringify(scenario, null, 2)}`);
+    swarmSimulation.injectScenario(scenario);
+    await new Promise(r => setTimeout(r, 500));
+    swarmHighlightStep(4);
+    swarmLog('\nRe-running from altered world...');
+    const round = swarmSimulation.runRound();
+    swarmLog(`\nRound ${round.round_number}:\n${round.agent_states.map(s => `  ${s.role} (${s.confidence}): ${s.statement}`).join('\n')}`);
+    swarmHighlightStep(5);
+    renderSwarmReport(swarmSimulation);
+    swarmLog('\nStress test complete. Generate report to view structured findings.');
+  });
+}
+
+if(swarmReportBtn){
+  swarmReportBtn.addEventListener('click', () => {
+    if(!swarmSimulation){ swarmConsole.textContent = 'Run simulation first.'; return; }
+    renderSwarmReport(swarmSimulation);
+    swarmLog('\nReport generated.');
+  });
+}
 </script>
 </body>
 </html>
