@@ -449,8 +449,30 @@
       <h4>Rider App</h4>
       <p>The field side of WISMO — riders get turn-by-turn delivery, scan-to-confirm, and live reroute pushes straight from the Geo / Route service. One tap updates status; the customer sees it instantly.</p>
     </div>
-    <a class="cta" href="/wismo/rider.html">Explore the rider app →</a>
+    <a class="cta" href="/DEMO/wismo-index.html">Open the full dashboard →</a>
   </div>
+  </section>
+
+  <!-- SWARM SIMULATION -->
+  <section class="block" id="swarm">
+    <div class="s-head">
+      <p class="s-ey">Swarm Intelligence</p>
+      <h2 class="s-h">Stress-test decisions before they happen</h2>
+      <p class="s-sub">Run multi-agent simulations against real WISMO scenarios. Inject shocks, rerun rounds, and generate structured reports — all from the merchant console.</p>
+    </div>
+    <div class="panel on" data-p="swarm">
+      <div class="flow">
+        <div class="step"><span class="n">1</span><div class="st"><b>Create</b><small>agents + world state</small></div></div>
+        <div class="step"><span class="n">2</span><div class="st"><b>Run</b><small>rounds play out</small></div></div>
+        <div class="step"><span class="n">3</span><div class="st"><b>Inject</b><small>fuel shock, route risk</small></div></div>
+        <div class="step"><span class="n">4</span><div class="st"><b>Re-run</b><small>agents re-align</small></div></div>
+        <div class="step"><span class="n">5</span><div class="st"><b>Report</b><small>structured findings</small></div></div>
+      </div>
+      <div style="margin-top:18px">
+        <a class="btn btn-pri" href="/wismo/index.html#swarm" target="_blank">Open Swarm tab →</a>
+        <p style="color:var(--muted);font-size:12px;margin-top:10px;font-family:var(--mono)">Tip: In the Swarm tab, click <b style="color:var(--teal-lt)">Run demo</b> to see an animated walkthrough without API calls.</p>
+      </div>
+    </div>
   </section>
 
   <!-- ARCH / INTERACTIVE FLOWCHART -->
@@ -496,7 +518,7 @@
     <p>WISMO gives your customers certainty, your operators control, and your business a single source of delivery truth.</p>
     <div class="hero-cta">
       <a class="btn btn-pri" href="#demo">Try the live track demo ↑</a>
-      <a class="btn btn-ghost" href="/wismo/index.html">Open the full dashboard</a>
+      <a class="btn btn-ghost" href="/DEMO/wismo-index.html">Open the full dashboard</a>
     </div>
   </section>
 </div>
@@ -625,7 +647,7 @@ function loadPipeHealth(){
 const mg = document.getElementById('modGrid');
 MODULES.forEach(m=>{
   const a = document.createElement('a');
-  a.className='mod'; a.href = m.id==='portal' ? '/wismo/portal' : (m.id==='delphi' ? '/wismo/bi' : '/wismo/');
+  a.className='mod'; a.href = m.id==='portal' ? '/DEMO/wismo-index.html' : (m.id==='delphi' ? '/DEMO/WISMO-Landing.html' : '/DEMO/wismo-index.html');
   a.innerHTML = `<span class="tag">${m.tag}</span>
     <div class="chip"><div class="glyph">${svg(m.glyph,'#E8B85D')}</div></div>
     <h4>${m.name}</h4><p>${m.desc}</p>
