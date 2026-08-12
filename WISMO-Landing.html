@@ -944,39 +944,65 @@ if(swarmStartBtn){
     swarmConsole.textContent = '';
     swarmReportCard.style.display = 'none';
     swarmReportBtn.disabled = true;
+    swarmStartBtn.disabled = true;
     swarmHighlightStep(1);
-    swarmLog(`Creating simulation...\n- ${name}\n- domain: ${domain}\n- agents: ${agents.map(a=>a.name).join(', ')}\n- world: ${JSON.stringify(initial_world)}`);
+    swarmLog(`[DEMO MODE — backend unavailable]\n\nCreating simulation...\n- ${name}\n- domain: ${domain}\n- agents: ${agents.map(a=>a.name).join(', ')}\n- world: ${JSON.stringify(initial_world)}`);
     await new Promise(r => setTimeout(r, 600));
     swarmSimulation = new SwarmSimulation({name, domain, initial_world, agents, max_rounds});
     swarmHighlightStep(2);
     swarmLog(`\nRunning ${max_rounds} rounds...`);
     await new Promise(r => setTimeout(r, 500));
-    for(let i=0;i<max_rounds;i++){
-      const round = swarmSimulation.runRound();
-      swarmLog(`\nRound ${round.round_number}:\n${round.agent_states.map(s => `  ${s.role} (${s.confidence}): ${s.statement}`).join('\n')}`);
+    const fuel = initial_world.fuel_price;
+    const stock = initial_world.stock_level;
+    const risk = initial_world.route_risk;
+    for(let i=1;i<=max_rounds;i++){
+      const confA = (0.65 + Math.random() * 0.3).toFixed(2);
+      const confB = (0.70 + Math.random() * 0.25).toFixed(2);
+      swarmLog(`\nRound ${i}:`);
+      swarmLog(`  Logistics Agent (confidence: ${confA})`);
+      swarmLog(`    → Route allocation revised for fuel_price=${fuel}, stock=${stock}.`);
+      if(i > 1 && risk > 0.5){
+        swarmLog(`    → Adjusting route mix to avoid high-risk corridors.`);
+      }
+      swarmLog(`  Regulator (confidence: ${confB})`);
+      swarmLog(`    → Compliance check updated for route_risk=${risk}. Monitoring thresholds applied.`);
       await new Promise(r => setTimeout(r, 500));
     }
+    swarmLog(`\nWorld state delta: fuel_price=${fuel}, stock=${stock}, route_risk=${risk}`);
     swarmHighlightStep(5);
     renderSwarmReport(swarmSimulation);
     swarmLog('\nSimulation complete. Use Stress test scenario to inject a shock, then Generate report to see updated findings.');
+    swarmStartBtn.disabled = false;
   });
 }
 
 if(swarmStressBtn){
   swarmStressBtn.addEventListener('click', async () => {
     if(!swarmSimulation){ swarmConsole.textContent = 'Run simulation first.'; return; }
+    swarmStressBtn.disabled = true;
     swarmHighlightStep(3);
     const scenario = {"fuel_price":1.20,"route_risk":0.8};
-    swarmLog(`\nInjecting scenario:\n${JSON.stringify(scenario, null, 2)}`);
+    const before = { ...swarmSimulation.world };
+    swarmLog(`\n[DEMO MODE — backend unavailable]\n\nInjecting scenario:\n${JSON.stringify(scenario, null, 2)}`);
     swarmSimulation.injectScenario(scenario);
     await new Promise(r => setTimeout(r, 500));
     swarmHighlightStep(4);
     swarmLog('\nRe-running from altered world...');
     const round = swarmSimulation.runRound();
-    swarmLog(`\nRound ${round.round_number}:\n${round.agent_states.map(s => `  ${s.role} (${s.confidence}): ${s.statement}`).join('\n')}`);
+    const fuel = scenario.fuel_price;
+    const risk = scenario.route_risk;
+    const confA = (0.65 + Math.random() * 0.3).toFixed(2);
+    const confB = (0.70 + Math.random() * 0.25).toFixed(2);
+    swarmLog(`\nRound ${round.round_number}:`);
+    swarmLog(`  Logistics Agent (confidence: ${confA})`);
+    swarmLog(`    → Route allocation revised for fuel_price=${fuel}, stock=${before.stock_level}.`);
+    swarmLog(`    → Adjusting route mix to avoid high-risk corridors.`);
+    swarmLog(`  Regulator (confidence: ${confB})`);
+    swarmLog(`    → Compliance check updated for route_risk=${risk}. Monitoring thresholds applied.`);
     swarmHighlightStep(5);
     renderSwarmReport(swarmSimulation);
     swarmLog('\nStress test complete. Generate report to view structured findings.');
+    swarmStressBtn.disabled = false;
   });
 }
 
