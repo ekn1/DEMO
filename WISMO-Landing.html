@@ -122,11 +122,37 @@
   .proc-step.done .ps-num{background:var(--teal);border-color:var(--teal);color:#fff}
   .proc-step.done .ps-lb{color:var(--ink)}
   .proc-msg{font-family:var(--mono);font-size:11.5px;color:var(--teal-lt);min-height:15px;margin:-4px 0 10px;text-align:center}
-  #swarm .flow .step{opacity:.55;transition:.25s}
-  #swarm .flow .step.active{opacity:1}
+  .flow .step{opacity:.55;transition:.25s}
+  .flow .step.active{opacity:1}
   #swarm .flow .step:hover{opacity:1}
   #swarm .flow .step .n{border:2px solid var(--line-2);border-radius:50%;width:27px;height:27px;display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--muted-2);background:var(--navy);transition:.25s}
   #swarm .flow .step.active .n{border-color:var(--amber);color:var(--amber);box-shadow:0 0 0 4px rgba(232,184,93,.16);animation:pulseA 1.4s infinite}
+
+  /* Swarm visualization */
+  .swarm-viz{display:grid;gap:14px;margin-top:10px}
+  .swarm-agent{display:flex;align-items:center;gap:14px;background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line-2);border-radius:var(--r-lg);padding:14px 16px;transition:.3s}
+  .swarm-agent .avatar{width:38px;height:38px;border-radius:12px;background:rgba(14,116,144,.14);border:1px solid var(--line-2);display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--teal-lt)}
+  .swarm-agent .meta{flex:1;min-width:0}
+  .swarm-agent .nm{font-size:14px;font-weight:600;margin:0 0 4px}
+  .swarm-agent .role{font-family:var(--mono);font-size:11px;color:var(--muted-2)}
+  .swarm-agent .bar-wrap{height:10px;background:var(--navy);border:1px solid var(--line-2);border-radius:999px;overflow:hidden;margin-top:8px}
+  .swarm-agent .bar{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-lt));border-radius:999px;width:0%;transition:width .6s ease}
+  .swarm-agent .conf{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px}
+  .swarm-world{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+  .swarm-stat{background:var(--navy);border:1px solid var(--line-2);border-radius:12px;padding:12px 14px}
+  .swarm-stat .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2)}
+  .swarm-stat .v{font-size:18px;font-weight:700;margin-top:4px;font-family:var(--mono)}
+  .swarm-stat .delta{font-family:var(--mono);font-size:11px;color:var(--amber);margin-top:2px}
+  .swarm-rounds{display:grid;gap:8px;margin-top:10px}
+  .swarm-round{display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:center;background:var(--navy);border:1px solid var(--line-2);border-radius:12px;padding:10px 12px}
+  .swarm-round .rn{width:28px;height:28px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line-2);display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .swarm-round.active .rn{border-color:var(--amber);color:var(--amber);box-shadow:0 0 0 4px rgba(232,184,93,.16);animation:pulseA 1.4s infinite}
+  .swarm-round .rd{font-family:var(--mono);font-size:12px;color:#c7cad3;line-height:1.5}
+  .swarm-report{display:grid;gap:10px;margin-top:10px}
+  .swarm-report .row{display:flex;justify-content:space-between;gap:10px;background:var(--navy);border:1px solid var(--line-2);border-radius:12px;padding:10px 12px}
+  .swarm-report .k{font-family:var(--mono);font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.08em}
+  .swarm-report .v{font-family:var(--mono);font-size:12px;color:#c7cad3;text-align:right;max-width:60%}
+  @keyframes pulseA{0%{box-shadow:0 0 0 0 rgba(232,184,93,.30)}70%{box-shadow:0 0 0 7px rgba(232,184,93,0)}100%{box-shadow:0 0 0 0 rgba(232,184,93,0)}}
 
   /* ---------- LOGO BAND ---------- */
   .band{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(14,27,46,.5);
@@ -486,6 +512,10 @@
       <div id="swarmReportCard" style="margin-top:14px;display:none">
         <div style="font-size:11px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Report</div>
         <div id="swarmReportBody" style="background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:16px;font-family:var(--mono);font-size:12px;color:#c7cad3;line-height:1.6;white-space:pre-wrap"></div>
+      </div>
+      <div id="swarmViz" style="margin-top:14px;display:none">
+        <div style="font-size:11px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Live visualization</div>
+        <div id="swarmVizCard" style="background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:16px"></div>
       </div>
     </div>
   </section>
@@ -931,6 +961,81 @@ function renderSwarmReport(sim){
   swarmReportBtn.disabled = false;
 }
 
+function renderSwarmViz(mode, data){
+  const viz = document.getElementById('swarmViz');
+  const card = document.getElementById('swarmVizCard');
+  if(!viz || !card) return;
+  viz.style.display = 'block';
+  let html = '';
+  if(mode === 'simulation'){
+    html += '<div class="swarm-world">';
+    html += `<div class="swarm-stat"><div class="k">fuel_price</div><div class="v">${data.fuel.toFixed(2)}</div><div class="delta">KES/L</div></div>`;
+    html += `<div class="swarm-stat"><div class="k">stock_level</div><div class="v">${data.stock}</div><div class="delta">units</div></div>`;
+    html += `<div class="swarm-stat"><div class="k">route_risk</div><div class="v">${data.risk.toFixed(2)}</div><div class="delta">index</div></div>`;
+    html += '</div>';
+    html += '<div class="swarm-rounds">';
+    for(let i=1;i<=data.maxRounds;i++){
+      html += `<div class="swarm-round${i===1?' active':''}" id="sround-${i}"><div class="rn">${i}</div><div class="rd">Round ${i} initialized</div></div>`;
+    }
+    html += '</div>';
+    html += '<div class="swarm-viz" id="swarmAgents"></div>';
+  } else if(mode === 'stress'){
+    html += '<div class="swarm-world">';
+    html += `<div class="swarm-stat"><div class="k">fuel_price</div><div class="v">${data.fuel.toFixed(2)}</div><div class="delta">${data.fuelDelta>0?'↑':'↓'} ${Math.abs(data.fuelDelta*100).toFixed(0)}%</div></div>`;
+    html += `<div class="swarm-stat"><div class="k">route_risk</div><div class="v">${data.risk.toFixed(2)}</div><div class="delta">${data.risk>0.5?'HIGH':'OK'}</div></div>`;
+    html += `<div class="swarm-stat"><div class="k">injected_at</div><div class="v">${new Date().toLocaleTimeString()}</div><div class="delta">scenario</div></div>`;
+    html += '</div>';
+    html += '<div class="swarm-viz" id="swarmAgents"></div>';
+  } else if(mode === 'report'){
+    html += '<div class="swarm-report">';
+    for(const [k,v] of Object.entries(data)){
+      html += `<div class="row"><div class="k">${k}</div><div class="v">${typeof v === 'object' ? JSON.stringify(v).slice(0,220) : v}</div></div>`;
+    }
+    html += '</div>';
+  }
+  card.innerHTML = html;
+  if(mode === 'simulation' || mode === 'stress'){
+    const agentsDiv = document.getElementById('swarmAgents');
+    if(agentsDiv && data.agents){
+      agentsDiv.innerHTML = data.agents.map(a => {
+        const conf = (0.55 + (a.riskAppetite||0.5) * 0.35) * 100;
+        return `<div class="swarm-agent" id="agent-${a.role}">
+          <div class="avatar">${(a.name||a.role)[0]}</div>
+          <div class="meta">
+            <div class="nm">${a.name||a.role}</div>
+            <div class="role">${a.role}</div>
+            <div class="bar-wrap"><div class="bar" id="bar-${a.role}" style="width:0%"></div></div>
+            <div class="conf" id="conf-${a.role}">confidence: 0%</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+function animateSimulationViz(data){
+  const fuel = data.fuel, stock = data.stock, risk = data.risk;
+  for(let i=1;i<=data.maxRounds;i++){
+    const roundEl = document.getElementById('sround-'+i);
+    if(!roundEl) continue;
+    setTimeout(()=>{
+      roundEl.classList.add('active');
+      roundEl.querySelector('.rd').textContent = `Round ${i}: agents observed state change`;
+    }, i * 600);
+  }
+  if(data.agents){
+    data.agents.forEach((a, idx)=>{
+      const bar = document.getElementById('bar-'+a.role);
+      const confEl = document.getElementById('conf-'+a.role);
+      const target = Math.round((0.55 + (a.riskAppetite||0.5) * 0.35) * 100);
+      setTimeout(()=>{
+        if(bar) bar.style.width = target + '%';
+        if(confEl) confEl.textContent = 'confidence: ' + (target/100).toFixed(2);
+      }, 600 + idx * 300);
+    });
+  }
+}
+
 if(swarmStartBtn){
   swarmStartBtn.addEventListener('click', async () => {
     const name = 'Nairobi fuel shock';
@@ -971,6 +1076,8 @@ if(swarmStartBtn){
     swarmLog(`\nWorld state delta: fuel_price=${fuel}, stock=${stock}, route_risk=${risk}`);
     swarmHighlightStep(5);
     renderSwarmReport(swarmSimulation);
+    renderSwarmViz('simulation', { fuel, stock, risk, maxRounds: max_rounds, agents });
+    animateSimulationViz({ fuel, stock, risk, maxRounds: max_rounds, agents });
     swarmLog('\nSimulation complete. Use Stress test scenario to inject a shock, then Generate report to see updated findings.');
     swarmStartBtn.disabled = false;
   });
@@ -1001,6 +1108,8 @@ if(swarmStressBtn){
     swarmLog(`    → Compliance check updated for route_risk=${risk}. Monitoring thresholds applied.`);
     swarmHighlightStep(5);
     renderSwarmReport(swarmSimulation);
+    renderSwarmViz('stress', { fuel: scenario.fuel_price, risk: scenario.route_risk, fuelDelta: scenario.fuel_price - before.fuel_price, agents: swarmSimulation.agents });
+    animateSimulationViz({ fuel: scenario.fuel_price, stock: before.stock_level, risk: scenario.route_risk, maxRounds: 1, agents: swarmSimulation.agents });
     swarmLog('\nStress test complete. Generate report to view structured findings.');
     swarmStressBtn.disabled = false;
   });
@@ -1010,6 +1119,17 @@ if(swarmReportBtn){
   swarmReportBtn.addEventListener('click', () => {
     if(!swarmSimulation){ swarmConsole.textContent = 'Run simulation first.'; return; }
     renderSwarmReport(swarmSimulation);
+    const world = swarmSimulation.world || {};
+    renderSwarmViz('report', {
+      'Simulation': swarmSimulation.name,
+      'ID': swarmSimulation.simulationId,
+      'Domain': swarmSimulation.domain,
+      'Rounds': swarmSimulation.rounds.length,
+      'fuel_price': world.fuel_price ?? '—',
+      'stock_level': world.stock_level ?? '—',
+      'route_risk': world.route_risk ?? '—',
+      'Last updated': new Date().toLocaleString()
+    });
     swarmLog('\nReport generated.');
   });
 }
