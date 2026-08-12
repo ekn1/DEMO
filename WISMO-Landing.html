@@ -662,7 +662,7 @@ function loadPipeHealth(){
 const mg = document.getElementById('modGrid');
 MODULES.forEach(m=>{
   const a = document.createElement('a');
-  a.className='mod'; a.href = m.id==='portal' ? '/DEMO/wismo-index.html' : (m.id==='delphi' ? '/DEMO/WISMO-Landing.html' : '/DEMO/wismo-index.html');
+  a.className='mod'; a.href = m.id==='portal' ? 'https://ekn1.github.io/wismo/' : (m.id==='delphi' ? '/DEMO/WISMO-Landing.html' : 'https://ekn1.github.io/wismo/');
   a.innerHTML = `<span class="tag">${m.tag}</span>
     <div class="chip"><div class="glyph">${svg(m.glyph,'#E8B85D')}</div></div>
     <h4>${m.name}</h4><p>${m.desc}</p>
