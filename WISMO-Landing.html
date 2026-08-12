@@ -490,9 +490,14 @@
       <p class="s-ey">Swarm Intelligence</p>
       <h2 class="s-h">Stress-test decisions before they happen</h2>
       <p class="s-sub">Run a live simulation right here: create agents, run rounds, inject a shock, and generate a report.</p>
-      <div style="margin-top:10px;padding:10px 12px;border:1px solid var(--line-2);border-radius:12px;background:var(--panel-2);font-family:var(--mono);font-size:11.5px;color:var(--muted-2);line-height:1.6">
-        <b style="color:var(--ink)">What this shows:</b> Run simulation — create agents, run 3 rounds, view console output with agent statements and confidence. Stress test scenario — inject a fuel shock (fuel_price: 1.20, route_risk: 0.8) and re-run. Generate report — structured findings with world state, round history, and Delphi forecast.
-        <br><b style="color:var(--ink)">How it works:</b> Pure client-side simulation using SwarmAgent and SwarmSimulation. No backend required. Demonstrates the full 5-step flow: Create → Run → Inject → Re-run → Report.
+      <div style="margin-top:10px;padding:12px;border:1px solid var(--line-2);border-radius:12px;background:var(--panel-2);font-family:var(--mono);font-size:11.5px;color:var(--muted-2);line-height:1.6">
+        <b style="color:var(--ink)">What this shows:</b>
+        <br><b>1. Create</b> — two swarm agents are initialized with different roles and risk appetites, then placed into an initial Nairobi delivery world state with baseline fuel price, stock level, and route risk.
+        <br><b>2. Run</b> — three simulation rounds execute sequentially. Each round shows live confidence scores and role-specific observations from both agents, revealing how logistics and regulatory perspectives diverge.
+        <br><b>3. Inject</b> — a stress-test scenario changes the world mid-simulation by raising fuel_price to 1.20 and route_risk to 0.8, simulating a market shock or corridor disruption.
+        <br><b>4. Re-run</b> — one additional round replays against the altered world state, demonstrating how agents adjust their recommendations under constrained conditions.
+        <br><b>5. Report</b> — a structured output is generated with world state snapshot, full round history, and a Delphi-style forecast summarizing consensus confidence and operational recommendations.
+        <br><b style="color:var(--ink)">How it works:</b> This demo uses embedded SwarmAgent and SwarmSimulation classes running entirely in the browser. No backend is required. The console below records each action in real time, while the visualization panel renders animated confidence bars, world-state cards, and round progression.
       </div>
     </div>
     <div class="panel on" data-p="swarm">
