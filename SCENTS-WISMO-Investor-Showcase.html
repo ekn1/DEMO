@@ -258,12 +258,12 @@ nodes.innerHTML=ARCH.map((a,i)=>{const cx=nodeCX[i],bx=cx-NODE_W/2;
 const LABELS={'/orders':'Order','/merchants':'Merchant','/geo':'Geo','/route':'Route','/notify':'Notify','/pixel':'Pixel','/are':'ARE','/bridge':'SCENTS Bridge','/delphi':'Delphi'};
 function loadStatus(){
   const grid=document.getElementById('statusGrid'),badge=document.getElementById('statusBadge'),text=document.getElementById('statusText');
-  const local=location.hostname==='localhost'||location.hostname==='127.0.0.1'||location.port==='8090';
+  const local=false /* hosted relative path */;
   if(!local){
     grid.innerHTML='<div class="stat-card"><span class="stat-dot up"></span><div class="stat-meta"><div class="nm">Live status</div><div class="pt">run the dashboard host for real-time pulse</div></div></div>';
     badge.className='badge ok';badge.textContent='HOSTED DEMO';text.textContent='live system pulse runs on the self-hosted dashboard';return;
   }
-  fetch('http://localhost:3000/health').then(r=>r.json()).then(d=>{
+  fetch('/wismo/health').then(r=>r.json()).then(d=>{
     grid.innerHTML=(d.services||[]).map(s=>{const up=s.status===200;const l=LABELS[s.route]||s.route;
       return `<div class="stat-card"><span class="stat-dot ${up?'up':'down'}"></span><div class="stat-meta"><div class="nm">${l}</div><div class="pt">:${s.port} ${up?'● up':'○ down'}</div></div></div>`;}).join('');
     if(d.up===d.total){badge.className='badge ok';badge.textContent='ALL SYSTEMS GO';text.textContent=d.up+'/'+d.total+' services live';}

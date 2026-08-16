@@ -613,9 +613,9 @@ function selectNode(id){
 // map gateway route prefixes to ARCH gw keys; fetch live health and light nodes
 const GW_ROUTE_TO_KEY = {'/orders':'/orders','/merchants':'/orders','/geo':'/geo','/route':'/geo','/notify':'/notify','/delphi':'/delphi'};
 function loadPipeHealth(){
-  const local = location.hostname==='localhost' || location.hostname==='127.0.0.1' || location.port==='8090';
+  const local = false /* hosted relative path */;
   if(!local) return; // hosted demo has no live backend
-  fetch('http://localhost:3000/health').then(r=>r.json()).then(d=>{
+  fetch('/wismo/health').then(r=>r.json()).then(d=>{
     (d.services||[]).forEach(s=>{ const k=GW_ROUTE_TO_KEY[s.route]; if(k) healthMap[k] = (s.status===200); });
     buildPipe();
   }).catch(()=>{});
@@ -757,14 +757,14 @@ async function loadStatus(){
   const grid=document.getElementById('statusGrid');
   const badge=document.getElementById('statusBadge');
   const text=document.getElementById('statusText');
-  const local = location.hostname==='localhost' || location.hostname==='127.0.0.1' || location.port==='8090';
+  const local = false /* hosted relative path */;
   if(!local){
     grid.innerHTML='<div class="stat-card"><span class="stat-dot up"></span><div class="stat-meta"><div class="nm">Live status</div><div class="pt">run the dashboard host for real-time pulse</div></div></div>';
     badge.className='badge ok'; badge.textContent='HOSTED DEMO'; text.textContent='live system pulse runs on the self-hosted dashboard';
     return;
   }
   try{
-    const r=await fetch('http://localhost:3000/health');
+    const r=await fetch('/wismo/health');
     const d=await r.json();
     const services=d.services||[];
     grid.innerHTML=services.map(s=>{
