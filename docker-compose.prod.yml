@@ -1,0 +1,134 @@
+version: '3.8'
+
+services:
+  scents-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.scents
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    environment:
+      SCENTS_API_TOKEN: ${SCENTS_API_TOKEN:-dev-token}
+      SCENTS_DB_PATH: /app/data/scents.sqlite
+      SCENTS_TLS_ENABLED: ${SCENTS_TLS_ENABLED:-false}
+      SCENTS_TLS_CERT: /app/certs/scents.crt
+      SCENTS_TLS_KEY: /app/certs/scents.key
+      SCENTS_TLS_MIN_VERSION: TLSv1.2
+      SCENTS_TRACING_ENABLED: ${SCENTS_TRACING_ENABLED:-false}
+      SCENTS_TRACING_EXPORTER: ${SCENTS_TRACING_EXPORTER:-console}
+      SCENTS_SERVICE_NAME: scents-api
+      BILLING_PROVIDER: ${BILLING_PROVIDER:-stripe}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      OSINT_REAL_CONNECTORS: ${OSINT_REAL_CONNECTORS:-false}
+      OSINT_CACHE_TTL: ${OSINT_CACHE_TTL:-300}
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./backups:/app/backups
+      - ./certs:/app/certs:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - scents-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  wismo-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.wismo
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      SCENTS_API_URL: http://scents-api:8080
+      WISMO_PORT: 3000
+      WISMO_OSINT_PORT: 3001
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    restart: unless-stopped
+    depends_on:
+      scents-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - scents-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - scents-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  nginx:
+    image: nginx:1.25-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+      - ./logs/nginx:/var/log/nginx
+    restart: unless-stopped
+    depends_on:
+      scents-api:
+        condition: service_healthy
+      wismo-api:
+        condition: service_healthy
+    networks:
+      - scents-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+
+volumes:
+  redis-data:
+
+networks:
+  scents-network:
+    driver: bridge
